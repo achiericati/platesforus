@@ -1,46 +1,34 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
-import { setupDatabase } from './database/db'; // La collegheremo a breve!
 
-// Riferimento alla finestra principale
-let mainWindow: BrowserWindow | null;
+let win: BrowserWindow;
 
-import { ipcMain } from 'electron';
-
-ipcMain.handle('ping', async () => {
-  console.log('Ping ricevuto da React');
-  return 'Pong dal Main!';
-});
-
-
-const createWindow = () => {
-  mainWindow = new BrowserWindow({
+function createWindow() {
+  win = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), // il preload va transpiled prima
-      contextIsolation: true, // sicurezza
-      nodeIntegration: false, // sicurezza
+      nodeIntegration: true, // Usa questo solo se necessario
+      contextIsolation: false, // Disabilita per maggiore compatibilità
     },
   });
 
-  // Durante lo sviluppo carica da Vite
-  mainWindow.loadURL('http://localhost:5173');
-
-  // Apri DevTools se vuoi (facoltativo)
-  mainWindow.webContents.openDevTools();
-};
+  // Carica la pagina di Vite
+  if (process.env.NODE_ENV === 'development') {
+    win.loadURL('http://localhost:5173/');
+  } else {
+    win.loadFile(path.join(__dirname, 'index.html'));
+  }
+}
 
 app.whenReady().then(() => {
   createWindow();
 
   app.on('activate', () => {
-    // Su macOS riapre la finestra se non ce ne sono
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
 app.on('window-all-closed', () => {
-  // Su macOS non chiude l'app quando chiudi la finestra
   if (process.platform !== 'darwin') app.quit();
 });
