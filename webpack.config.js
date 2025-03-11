@@ -7,7 +7,7 @@ module.exports = {
   entry: './frontend/src/main.tsx',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist', 'mac', 'plates-for-us.app', 'Contents', 'Resources'),
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
