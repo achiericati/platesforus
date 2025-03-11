@@ -7,10 +7,10 @@ module.exports = {
   entry: './frontend/src/main.tsx',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist')
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   module: {
     rules: [
@@ -18,22 +18,22 @@ module.exports = {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: 'babel-loader'
         },
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader', 'postcss-loader'],
+        use: ['style-loader', 'css-loader', 'postcss-loader']
       },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './frontend/public/index.html',
+      template: './frontend/public/index.html'
     }),
   ],
   devServer: {
     static: path.resolve(__dirname, 'dist'),
-    port: 5173,
+    port: 5173
   },
 };
