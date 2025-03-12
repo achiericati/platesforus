@@ -61,14 +61,15 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
       {/* Modale per mostrare la ricetta e il tempo di preparazione */}
         {selectedDish && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white text-black p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <div className="bg-white text-black p-6 rounded-lg shadow-lg max-w-4xl w-full max-h-[600px] min-h-[300px] overflow-y-auto border-4 border-white-600
+">
             <h4 className="text-2xl font-semibold mb-4">{selectedDish.name}</h4>
             <p className="text-lg mb-4"><strong>Categoria:</strong> {selectedDish.category}</p>
             <p className="text-lg mb-4"><strong>Tempo di preparazione:</strong> {selectedDish.prepTime} min</p>
 
             {/* Aggiungi una classe per la ricetta con max-height e overflow */}
-            <div className="text-lg mb-4 max-h-48 overflow-y-auto">
-                <strong>Ricetta:</strong>
+            <strong >Ricetta:</strong>
+            <div style={{marginTop:'10px'}} className="text-m mb-4 max-h-[300px] overflow-y-auto">
                 <p>{selectedDish.notes || 'Nessuna ricetta disponibile'}</p>
             </div>
 

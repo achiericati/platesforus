@@ -68,7 +68,7 @@ function App() {
       )}
 
       {/* Footer (rimane in basso) */}
-      <footer className="text-center py-4 text-sm text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+      <footer className="text-center py-2 text-sm text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
         Made with ❤️ by Andrea & Annalisa
       </footer>
     </div>
