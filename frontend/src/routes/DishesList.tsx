@@ -10,6 +10,10 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
     setSelectedDish(dish); // Imposta il piatto selezionato
   };
 
+  const editDish = (dish: any) => {
+    alert("edit dish");
+  };
+
   // Funzione per chiudere il modale
   const closeModal = () => {
     setSelectedDish(null);
@@ -58,30 +62,45 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
         </div>
       </div>
 
-      {/* Modale per mostrare la ricetta e il tempo di preparazione */}
-        {selectedDish && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white text-black p-6 rounded-lg shadow-lg max-w-4xl w-full max-h-[600px] min-h-[300px] overflow-y-auto border-4 border-white-600
-">
-            <h4 className="text-2xl font-semibold mb-4">{selectedDish.name}</h4>
-            <p className="text-lg mb-4"><strong>Categoria:</strong> {selectedDish.category}</p>
-            <p className="text-lg mb-4"><strong>Tempo di preparazione:</strong> {selectedDish.prepTime} min</p>
+     {/* Modale per mostrare la ricetta e il tempo di preparazione */}
+{selectedDish && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div
+      className="bg-white text-black p-6 rounded-lg shadow-lg max-w-4xl w-full max-h-[80vh] min-h-[300px] overflow-y-auto border-4 border-white-600 flex flex-col"
+      style={{ height: '80vh' }}
+    >
+      <h4 className="text-2xl font-semibold mb-4">{selectedDish.name}</h4>
+      <p className="text-lg mb-4"><strong>Categoria:</strong> {selectedDish.category}</p>
+      <p className="text-lg mb-4"><strong>Tempo di preparazione:</strong> {selectedDish.prepTime} min</p>
 
-            {/* Aggiungi una classe per la ricetta con max-height e overflow */}
-            <strong >Ricetta:</strong>
-            <div style={{marginTop:'10px'}} className="text-m mb-4 max-h-[300px] overflow-y-auto">
-                <p>{selectedDish.notes || 'Nessuna ricetta disponibile'}</p>
-            </div>
+      {/* Aggiungi una classe per la ricetta con max-height e overflow */}
+      <strong>Ricetta:</strong>
+      <div
+        style={{ marginTop: '10px', flex: 1, maxHeight: '60vh' }}
+        className="text-m mb-4 overflow-y-auto"
+      >
+        <p>{selectedDish.notes || 'Nessuna ricetta disponibile'}</p>
+      </div>
 
-            <button
-                onClick={closeModal}
-                className="bg-purple-600 text-white py-2 px-6 rounded-lg shadow-lg hover:bg-purple-700 transition-all"
-            >
-                Chiudi
-            </button>
-            </div>
-        </div>
-        )}
+      {/* Contenitore per i bottoni */}
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={editDish} // Aggiungi la logica per modificare la ricetta
+          className="bg-purple-600 text-white py-2 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-all"
+        >
+          Modifica
+        </button>
+        <button
+          onClick={closeModal}
+          className="bg-purple-600 text-white py-2 px-6 rounded-lg shadow-lg hover:bg-purple-700 transition-all"
+        >
+          Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
     </section>
   );
