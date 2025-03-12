@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import DishesList from './routes/DishesList';
 
 function App() {
   // State per gestire la visibilità della schermata "Gestisci Piatti"
@@ -10,7 +11,7 @@ function App() {
     { name: 'Pasta Carbonara', category: 'Primo', prepTime: 20, notes: 'Pasta con pancetta, uovo e pecorino.' },
     { name: 'Lasagna', category: 'Primo', prepTime: 60, notes: 'Lasagna con ragù, besciamella e parmigiano.' },
     { name: 'Tiramisu', category: 'Dolce', prepTime: 15, notes: 'Dolce al mascarpone con caffè e cacao.' },
-    { name: 'Frittata con speck e zucchine', category: 'Secondo', prepTime: 35, notes: '' }
+    { name: 'Frittata con speck e zucchine Frittata con speck e zucchine', category: 'Secondo', prepTime: 35, notes: '' }
 
   ];
 
@@ -22,6 +23,11 @@ function App() {
   // Funzione per tornare alla schermata principale
   const handleBackClick = () => {
     setShowManageDishes(false);
+  };
+
+  // Funzione per tornare alla schermata principale
+  const handleAddNewClick = () => {
+    alert('Mostra form per aggiungere un piatto');
   };
 
   return (
@@ -54,37 +60,11 @@ function App() {
 
       {/* Schermata Gestisci Piatti */}
       {showManageDishes && (
-        <section className="flex flex-col items-center text-white py-6 mt-6 rounded-lg shadow-lg max-w-full flex-1">
-          {/* Bottone Indietro */}
-          <button 
-            onClick={handleBackClick} 
-            className="absolute top-20 left-4 bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors"
-          >
-            ← Indietro
-          </button>
-
-          <h3 className="text-2xl font-semibold mb-4">Gestisci i tuoi piatti</h3>
-          
-          {/* Lista Piatti */}
-          <div className="mb-4 w-full px-6">
-            <div className="grid grid-cols-8 md:grid-cols-10 lg:grid-cols-10 gap-4 w-full">
-              {dishes.map((dish, index) => (
-                <div key={index} className="bg-white text-purple-600 p-1 rounded-lg shadow-lg flex flex-col justify-between h-55 hover:scale-105 transition-transform">
-                  <h5 className="font-bold text-lg">{dish.name}</h5>
-                  <p className="text-sm">{dish.category}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottone per mostrare il form */}
-          <button 
-            onClick={() => alert('Mostra form per aggiungere un piatto')} // Qui implementerai la logica per mostrare il form
-            className="bg-purple-600 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-purple-700 transition-all"
-          >
-            Aggiungi Nuovo Piatto
-          </button>
-        </section>
+        <DishesList
+          dishes={dishes}
+          onBackClick={handleBackClick}
+          onAddNewClick={handleAddNewClick}
+        />
       )}
 
       {/* Footer (rimane in basso) */}
