@@ -66,8 +66,8 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
 {selectedDish && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div
-      className="bg-white text-black p-6 rounded-lg shadow-lg max-w-4xl w-full max-h-[80vh] min-h-[300px] overflow-y-auto border-4 border-white-600 flex flex-col"
-      style={{ height: '80vh' }}
+      className="bg-white text-black p-6 rounded-lg shadow-lg max-w-4xl w-full min-h-[300px] overflow-y-auto border-4 border-white-600 flex flex-col"
+      style={{ maxHeight: '80vh', height: 'auto' }} // Altezza massima del modale proporzionata alla finestra, ma altezza automatica in base al contenuto
     >
       <h4 className="text-2xl font-semibold mb-4">{selectedDish.name}</h4>
       <p className="text-lg mb-4"><strong>Categoria:</strong> {selectedDish.category}</p>
