@@ -5,8 +5,9 @@
   "main": "dist/bundle.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
-    "dev:react": "webpack serve --mode development",
+    "dev:react": "webpack serve --mode development --open",
     "dev:electron": "tsc -p electron && electron ./dist/main.js",
+    "dev:web": "webpack serve --mode development --open",
     "build": "webpack --mode production && electron-builder"
   },
   "keywords": [],

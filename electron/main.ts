@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
+import { setupDatabase, insertMockDish } from './database/db';
 
 let win: BrowserWindow;
 
@@ -21,7 +22,12 @@ function createWindow() {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+
+  await setupDatabase(); 
+
+  await insertMockDish();
+
   createWindow();
 
   app.on('activate', () => {

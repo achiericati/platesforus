@@ -29,4 +29,17 @@ export const setupDatabase = async () => {
   console.log('Database pronto (sqlite3 async)');
 };
 
+export const insertMockDish = async () => {
+  
+  // Dati del piatto mock
+  const name = 'Pizza Margherita';
+  const category = 'Primo';
+  const prepTime = 30;
+  const notes = 'Una pizza semplice con pomodoro e mozzarella.';
+  
+  await db.run('INSERT INTO dishes (name, category, prepTime, notes) VALUES (?, ?, ?, ?)', [name, category, prepTime, notes]);
+  console.log('Piatto mock inserito!');
+};
+
+
 export const getDb = () => db;
