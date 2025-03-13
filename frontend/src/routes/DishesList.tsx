@@ -120,7 +120,7 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
 
       {/* Filtri */}
       {showFilters && (
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 w-full px-4 mb-8">
+        <div className="grid grid-cols-3 xl:grid-cols-3 gap-6 w-full px-4 mb-8">
 
           {/* Categoria */}
           <div className="flex justify-center xl:justify-start">
