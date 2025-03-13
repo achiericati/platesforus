@@ -31,9 +31,9 @@ const FiltersSection: React.FC<FiltersSectionProps> = ({
 }) => {
   return (
     <>
-      <div className="flex items-center justify-center mb-4 gap-4">
+      <div className="flex items-center justify-center mb-4 gap-2">
 
-        <div className="bg-white rounded-full shadow px-3 py-2 flex items-center">
+        <div style={{ marginRight: '5px' }} className="bg-white rounded-full shadow px-3 py-2 flex items-center">
           <label className="flex items-center cursor-pointer">
             <div className="relative w-8 h-4">
               <input
@@ -55,7 +55,6 @@ const FiltersSection: React.FC<FiltersSectionProps> = ({
 
         <button
           onClick={resetFilters}
-          style={{ marginLeft: '5px' }}
           className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-xs outline-none focus:outline-none"
         >
           Reset Filtri

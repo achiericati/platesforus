@@ -55,14 +55,14 @@ const DishModal: React.FC<DishModalProps> = ({ dish, onClose, onEdit }) => {
           <button
             style={{ marginRight: '5px' }}
             onClick={() => onEdit(dish)}
-            className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-purple-700 transition-colors text-sm"
+            className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-purple-700 transition-colors text-sm outline-none focus:outline-none"
           >
             Modifica
           </button>
 
           <button
             onClick={onClose}
-            className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-600 transition-colors text-sm"
+            className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-600 transition-colors text-sm outline-none focus:outline-none"
           >
             Chiudi
           </button>

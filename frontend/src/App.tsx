@@ -23,7 +23,7 @@ function App() {
         <h1 className="text-3xl font-semibold text-white">Plates For Us 🍽️</h1>
         {!showManageDishes && (
           <button 
-            className="bg-white text-purple-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-200 transition-colors"
+            className="bg-white text-purple-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-200 transition-colors outline-none focus:outline-none"
             onClick={handleManageDishesClick}
           >
             Gestisci Piatti

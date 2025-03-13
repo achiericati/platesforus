@@ -52,14 +52,14 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
       <div className="flex items-center justify-between w-full px-5 py-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 mb-4">
         <button
           onClick={onBackClick}
-          className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm"
+          className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
         >
           ← Indietro
         </button>
         <h3 className="text-xl font-semibold text-white text-center">Gestisci i tuoi piatti</h3>
         <button
           onClick={onAddNewClick}
-          className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm"
+          className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
         >
           Aggiungi Nuovo Piatto
         </button>
