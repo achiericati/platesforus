@@ -47,70 +47,82 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
   };
 
   const categories = ['All', 'Primo', 'Secondo', 'Contorno', 'Dolce'];
+
   const difficulties = ['All', 'Facile', 'Media', 'Difficile'];
 
+  const categoryIcons: any = {
+    'Primo': '🍝',
+    'Secondo': '🍖',
+    'Contorno': '🥗',
+    'Dolce': '🍰'
+  };
+
   return (
-    <section className="flex flex-col items-center text-white py-6 mt-6 rounded-lg shadow-lg max-w-full flex-1">
+    <section className="flex flex-col flex-grow w-full overflow-hidden">
 
-      {/* Bottone Indietro */}
-      <button
-        onClick={onBackClick}
-        className="absolute top-20 left-4 bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors"
-      >
-        ← Indietro
-      </button>
+      {/* Barra superiore */}
+      <div className="flex items-center justify-between w-full px-5 py-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 mb-4">
+        
+        {/* Bottone Indietro */}
+        <button
+          onClick={onBackClick}
+          className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm"
+        >
+          ← Indietro
+        </button>
 
-      {/* Bottone Aggiungi */}
-      <button
-        onClick={onAddNewClick}
-        className="absolute top-20 right-4 bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors"
-      >
-        Aggiungi Nuovo Piatto
-      </button>
+        {/* Titolo */}
+        <h3 className="text-xl font-semibold text-white text-center">
+          Gestisci i tuoi piatti
+        </h3>
 
-      <h3 className="text-3xl font-semibold mb-4">Gestisci i tuoi piatti</h3>
+        {/* Bottone Aggiungi */}
+        <button
+          onClick={onAddNewClick}
+          className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm"
+        >
+          Aggiungi Nuovo Piatto
+        </button>
+
+      </div>
 
       {/* Switch Mostra/Nascondi + Bottone Reset */}
       <div className="flex items-center justify-center mb-4 gap-4">
 
-      {/* Wrapper con background come il bottone */}
-      <div className="bg-white rounded-full shadow px-3 py-2 flex items-center">
-        <label className="flex items-center cursor-pointer">
-          <div className="relative w-8 h-4">
-            <input
-              type="checkbox"
-              className="sr-only"
-              checked={showFilters}
-              onChange={() => setShowFilters(!showFilters)}
-            />
-            {/* Track */}
-            <div className="w-8 h-4 bg-gray-300 rounded-full transition-colors duration-300"></div>
-            {/* Dot */}
-            <div
-              className={`absolute top-0 left-0 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ${showFilters ? 'translate-x-[16px] bg-purple-600' : 'bg-white'}`}
-            ></div>
-          </div>
-          <span className="ml-3 text-purple-600 text-xs font-semibold">
-            {showFilters ? 'Nascondi Filtri' : 'Mostra Filtri'}
-          </span>
-        </label>
-      </div>
+        <div className="bg-white rounded-full shadow px-3 py-2 flex items-center">
+          <label className="flex items-center cursor-pointer">
+            <div className="relative w-8 h-4">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={showFilters}
+                onChange={() => setShowFilters(!showFilters)}
+              />
+              <div className="w-8 h-4 bg-gray-300 rounded-full transition-colors duration-300"></div>
+              <div
+                className={`absolute top-0 left-0 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ${showFilters ? 'translate-x-[16px] bg-purple-600' : ''}`}
+              ></div>
+            </div>
+            <span className="ml-3 text-purple-600 text-xs font-semibold">
+              {showFilters ? 'Nascondi Filtri' : 'Mostra Filtri'}
+            </span>
+          </label>
+        </div>
 
-      {/* Bottone Reset Filtri */}
-      <button
-        onClick={resetFilters}
-        style={{ marginLeft: '5px' }}
-        className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-xs outline-none focus:outline-none"
-      >
-        Reset Filtri
-      </button>
-    </div>
+        <button
+          onClick={resetFilters}
+          style={{ marginLeft: '5px' }}
+          className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-xs outline-none focus:outline-none"
+        >
+          Reset Filtri
+        </button>
+      </div>
 
       {/* Filtri */}
       {showFilters && (
-        <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 w-full px-4 mb-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 w-full px-4 mb-8">
 
-          {/* Filtra per categoria - Sinistra su XL */}
+          {/* Categoria */}
           <div className="flex justify-center xl:justify-start">
             <div>
               <h4 className="text-sm font-semibold text-white-600">Categoria:</h4>
@@ -123,7 +135,7 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
                       setCategoryFilter(category);
                       applyFilters(category, difficultyFilter, timeFilter);
                     }}
-                    className={`px-1 py-1 rounded-full ${
+                    className={`px-2 py-1 rounded-full text-xs ${
                       category === categoryFilter
                         ? 'bg-purple-600 text-white'
                         : 'bg-white text-purple-600'
@@ -136,7 +148,7 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
             </div>
           </div>
 
-          {/* Filtra per difficoltà - Centro su XL */}
+          {/* Difficoltà */}
           <div className="flex justify-center">
             <div>
               <h4 className="text-sm font-semibold text-white-600">Difficoltà:</h4>
@@ -149,7 +161,7 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
                       setDifficultyFilter(difficulty);
                       applyFilters(categoryFilter, difficulty, timeFilter);
                     }}
-                    className={`px-1 py-1 rounded-full ${
+                    className={`px-2 py-1 rounded-full text-xs ${
                       difficulty === difficultyFilter
                         ? 'bg-purple-600 text-white'
                         : 'bg-white text-purple-600 border'
@@ -162,7 +174,7 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
             </div>
           </div>
 
-          {/* Filtra per tempo - Destra su XL */}
+          {/* Tempo */}
           <div className="flex justify-center xl:justify-end">
             <div>
               <h4 className="text-sm font-semibold text-white-600">Tempo di preparazione:</h4>
@@ -175,7 +187,7 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
                       setTimeFilter(time);
                       applyFilters(categoryFilter, difficultyFilter, time);
                     }}
-                    className={`px-1 py-1 rounded-full ${
+                    className={`px-2 py-1 rounded-full text-xs ${
                       time === timeFilter
                         ? 'bg-purple-600 text-white'
                         : 'bg-white text-purple-600 border'
@@ -192,29 +204,56 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
       )}
 
       {/* Lista Piatti */}
-      <div style={{ marginTop: '0px' }} className="mb-4 w-full px-6">
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 w-full">
-          {filteredDishes.map((dish: any, index: number) => (
-            <div
-              key={index}
-              className="bg-white text-purple-600 p-4 rounded-lg shadow-lg flex flex-col justify-between hover:scale-105 hover:shadow-xl transition-all cursor-pointer"
-              onClick={() => onDishClick(dish)}
-            >
-              <h5 style={{ marginBottom: '10px' }} className="font-bold text-lg">{dish.name}</h5>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                {dish.category === 'Primo' ? (
-                  <FaUtensils style={{ marginRight: '6px' }} className="text-2xl text-yellow-500" />
-                ) : (
-                  <FaHamburger style={{ marginRight: '6px' }} className="text-2xl text-red-500" />
-                )}
-                <p className="text-sm">{dish.category}</p>
+      <div
+        className="overflow-y-auto w-full px-6 py-4 scrollable-cards flex-grow"
+        style={{ maxHeight: showFilters ? 'calc(100vh - 300px)' : 'calc(100vh - 210px)' }}
+      >
+        {categoryFilter === 'All' ? (
+          categories.filter(c => c !== 'All').map((category) => {
+            const dishesByCategory = filteredDishes.filter(dish => dish.category === category);
+            if (dishesByCategory.length === 0) return null;
+
+            return (
+              <div key={category} className="mb-4">
+                <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+                  {category} <span style={{marginLeft:'5px'}}> {categoryIcons[category]}</span> 
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                  {dishesByCategory.map((dish: any, index: number) => (
+                    <div
+                      key={index}
+                      className="bg-white text-purple-600 p-4 rounded-lg shadow-lg flex flex-col justify-between hover:scale-105 transition-all cursor-pointer"
+                      onClick={() => onDishClick(dish)}
+                    >
+                      <h5 style={{ marginBottom: '10px' }} className="font-bold text-lg">{dish.name}</h5>
+                      
+                    </div>
+                  ))}
+                </div>
               </div>
+            );
+          })
+        ) : (
+          <div className="mb-4">
+            <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+            {categoryFilter} <span style={{marginLeft:'5px'}}>{categoryIcons[categoryFilter]}</span> 
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+              {filteredDishes.map((dish: any, index: number) => (
+                <div
+                  key={index}
+                  className="bg-white text-purple-600 p-4 rounded-lg shadow-lg flex flex-col justify-between hover:scale-105 transition-all cursor-pointer"
+                  onClick={() => onDishClick(dish)}
+                >
+                  <h5 style={{ marginBottom: '10px' }} className="font-bold text-lg">{dish.name}</h5>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Modale per mostrare la ricetta e il tempo di preparazione */}
+      {/* Modale piatto selezionato */}
       {selectedDish && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
@@ -226,10 +265,7 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
             <p className="text-lg mb-4"><strong>Tempo di preparazione:</strong> {selectedDish.prepTime} min</p>
 
             <strong>Ricetta:</strong>
-            <div
-              style={{ marginTop: '10px', flex: 1, maxHeight: '60vh' }}
-              className="text-m mb-4 overflow-y-auto"
-            >
+            <div className="text-m mb-4 overflow-y-auto" style={{ marginTop: '10px', flex: 1, maxHeight: '60vh' }}>
               <p>{selectedDish.notes || 'Nessuna ricetta disponibile'}</p>
             </div>
 
