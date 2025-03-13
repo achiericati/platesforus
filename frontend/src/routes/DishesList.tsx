@@ -253,39 +253,57 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
         )}
       </div>
 
-      {/* Modale piatto selezionato */}
-      {selectedDish && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className="bg-white text-black p-6 rounded-lg shadow-lg max-w-4xl w-full min-h-[300px] overflow-y-auto border-4 border-white-600 flex flex-col"
-            style={{ maxHeight: '80vh', height: 'auto' }}
-          >
-            <h4 className="text-2xl font-semibold mb-4">{selectedDish.name}</h4>
-            <p className="text-lg mb-4"><strong>Categoria:</strong> {selectedDish.category}</p>
-            <p className="text-lg mb-4"><strong>Tempo di preparazione:</strong> {selectedDish.prepTime} min</p>
+      {/* Modal */}
+        {/* Modal con inline styles */}
+        {selectedDish && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            color: 'black',
+            padding: '1.5rem',
+            borderRadius: '0.5rem',
+            width: '90%',
+            maxWidth: '32rem',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h4 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>{selectedDish.name}</h4>
+            <p style={{ marginBottom: '0.5rem' }}><strong>Categoria:</strong> {selectedDish.category}</p>
+            <p style={{ marginBottom: '0.5rem' }}><strong>Difficoltà:</strong> {selectedDish.difficulty}</p>
+            <p style={{ marginBottom: '0.5rem' }}><strong>Tempo di preparazione:</strong> {selectedDish.prepTime} min</p>
+            <p style={{ marginBottom: '1rem' }}><strong>Ricetta:</strong> {selectedDish.notes || 'Nessuna ricetta disponibile'}</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+            <button
+              onClick={() => alert('Modifica piatto')}
+              style={{marginRight: '5px'}}
+              className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-purple-700 transition-colors text-sm"
+            >
+              Modifica
+            </button>
 
-            <strong>Ricetta:</strong>
-            <div className="text-m mb-4 overflow-y-auto" style={{ marginTop: '10px', flex: 1, maxHeight: '60vh' }}>
-              <p>{selectedDish.notes || 'Nessuna ricetta disponibile'}</p>
-            </div>
-
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={() => editDish(selectedDish)}
-                className="bg-purple-600 text-white py-2 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-all"
-              >
-                Modifica
-              </button>
-              <button
-                onClick={closeModal}
-                className="bg-purple-600 text-white py-2 px-6 rounded-lg shadow-lg hover:bg-purple-700 transition-all"
-              >
-                Chiudi
-              </button>
+            <button
+              onClick={() => setSelectedDish(null)}
+              className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-600 transition-colors text-sm"
+            >
+              Chiudi
+            </button>
             </div>
           </div>
         </div>
       )}
+
     </section>
   );
 };
