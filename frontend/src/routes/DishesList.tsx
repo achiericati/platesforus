@@ -7,21 +7,20 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('All');
   const [timeFilter, setTimeFilter] = useState<number | null>(null);
-  const [showFilters, setShowFilters] = useState<boolean>(true); // <-- gestisce visibilità dei filtri
+  const [showFilters, setShowFilters] = useState<boolean>(false);
 
   const onDishClick = (dish: any) => {
     setSelectedDish(dish);
   };
 
   const editDish = (dish: any) => {
-    alert("edit dish");
+    alert('edit dish');
   };
 
   const closeModal = () => {
     setSelectedDish(null);
   };
 
-  // Funzione per applicare i filtri
   const applyFilters = (categoryValue: string, difficultyValue: string, timeValue: number | null) => {
     let filtered = [...dishes];
 
@@ -33,11 +32,18 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
       filtered = filtered.filter((dish: any) => dish.difficulty === difficultyValue);
     }
 
-    if (timeValue) {
+    if (timeValue !== null) {
       filtered = filtered.filter((dish: any) => dish.prepTime <= timeValue);
     }
 
     setFilteredDishes(filtered);
+  };
+
+  const resetFilters = () => {
+    setCategoryFilter('All');
+    setDifficultyFilter('All');
+    setTimeFilter(null);
+    applyFilters('All', 'All', null);
   };
 
   const categories = ['All', 'Primo', 'Secondo', 'Contorno', 'Dolce'];
@@ -64,8 +70,11 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
 
       <h3 className="text-3xl font-semibold mb-4">Gestisci i tuoi piatti</h3>
 
-      {/* Switch Mostra/Nascondi Filtri */}
-      <div className="flex items-center justify-center mb-2">
+      {/* Switch Mostra/Nascondi + Bottone Reset */}
+      <div className="flex items-center justify-center mb-4 gap-4">
+
+      {/* Wrapper con background come il bottone */}
+      <div className="bg-white rounded-full shadow px-3 py-2 flex items-center">
         <label className="flex items-center cursor-pointer">
           <div className="relative w-8 h-4">
             <input
@@ -75,106 +84,115 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
               onChange={() => setShowFilters(!showFilters)}
             />
             {/* Track */}
-            <div className="w-8 h-4 bg-gray-400 rounded-full shadow-inner"></div>
-
+            <div className="w-8 h-4 bg-gray-300 rounded-full transition-colors duration-300"></div>
             {/* Dot */}
             <div
-              className={`absolute top-0 left-0 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ${showFilters ? 'translate-x-[16px] bg-purple-600' : ''}`}
+              className={`absolute top-0 left-0 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ${showFilters ? 'translate-x-[16px] bg-purple-600' : 'bg-white'}`}
             ></div>
           </div>
-          <span className="ml-3 text-white text-xs">
+          <span className="ml-3 text-purple-600 text-xs font-semibold">
             {showFilters ? 'Nascondi Filtri' : 'Mostra Filtri'}
           </span>
         </label>
       </div>
 
+      {/* Bottone Reset Filtri */}
+      <button
+        onClick={resetFilters}
+        style={{ marginLeft: '5px' }}
+        className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-xs outline-none focus:outline-none"
+      >
+        Reset Filtri
+      </button>
+    </div>
+
       {/* Filtri */}
       {showFilters && (
-  <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 w-full px-4 mb-8">
+        <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 w-full px-4 mb-8">
 
-    {/* Filtra per categoria - Sinistra su XL */}
-    <div className="flex justify-center xl:justify-start">
-      <div>
-        <h4 className="text-sm font-semibold text-white-600">Categoria:</h4>
-        <div className="flex gap-2 mt-2 flex-wrap justify-center xl:justify-start">
-          {categories.map((category) => (
-            <button
-              key={category}
-              style={{ marginRight: "5px", marginTop: "5px" }}
-              onClick={() => {
-                setCategoryFilter(category);
-                applyFilters(category, difficultyFilter, timeFilter);
-              }}
-              className={`px-1 py-1 rounded-full ${
-                category === categoryFilter
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white text-purple-600'
-              } outline-none focus:outline-none`}
-            >
-              {category}
-            </button>
-          ))}
+          {/* Filtra per categoria - Sinistra su XL */}
+          <div className="flex justify-center xl:justify-start">
+            <div>
+              <h4 className="text-sm font-semibold text-white-600">Categoria:</h4>
+              <div className="flex gap-2 mt-2 flex-wrap justify-center xl:justify-start">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    style={{ marginRight: '5px', marginTop: '5px' }}
+                    onClick={() => {
+                      setCategoryFilter(category);
+                      applyFilters(category, difficultyFilter, timeFilter);
+                    }}
+                    className={`px-1 py-1 rounded-full ${
+                      category === categoryFilter
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-white text-purple-600'
+                    } outline-none focus:outline-none`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Filtra per difficoltà - Centro su XL */}
+          <div className="flex justify-center">
+            <div>
+              <h4 className="text-sm font-semibold text-white-600">Difficoltà:</h4>
+              <div className="flex gap-2 mt-2 flex-wrap justify-center">
+                {difficulties.map((difficulty) => (
+                  <button
+                    key={difficulty}
+                    style={{ marginRight: '5px', marginTop: '5px' }}
+                    onClick={() => {
+                      setDifficultyFilter(difficulty);
+                      applyFilters(categoryFilter, difficulty, timeFilter);
+                    }}
+                    className={`px-1 py-1 rounded-full ${
+                      difficulty === difficultyFilter
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-white text-purple-600 border'
+                    } outline-none focus:outline-none`}
+                  >
+                    {difficulty}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Filtra per tempo - Destra su XL */}
+          <div className="flex justify-center xl:justify-end">
+            <div>
+              <h4 className="text-sm font-semibold text-white-600">Tempo di preparazione:</h4>
+              <div className="flex gap-2 mt-2 flex-wrap justify-center xl:justify-end">
+                {[15, 30, 45, 60, 90].map((time) => (
+                  <button
+                    key={time}
+                    style={{ marginRight: '5px', marginTop: '5px' }}
+                    onClick={() => {
+                      setTimeFilter(time);
+                      applyFilters(categoryFilter, difficultyFilter, time);
+                    }}
+                    className={`px-1 py-1 rounded-full ${
+                      time === timeFilter
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-white text-purple-600 border'
+                    } outline-none focus:outline-none`}
+                  >
+                    {time}'
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
         </div>
-      </div>
-    </div>
-
-    {/* Filtra per difficoltà - Centro su XL */}
-    <div className="flex justify-center">
-      <div>
-        <h4 className="text-sm font-semibold text-white-600">Difficoltà:</h4>
-        <div className="flex gap-2 mt-2 flex-wrap justify-center">
-          {difficulties.map((difficulty) => (
-            <button
-              key={difficulty}
-              style={{ marginRight: "5px", marginTop: "5px" }}
-              onClick={() => {
-                setDifficultyFilter(difficulty);
-                applyFilters(categoryFilter, difficulty, timeFilter);
-              }}
-              className={`px-1 py-1 rounded-full ${
-                difficulty === difficultyFilter
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white text-purple-600 border'
-              } outline-none focus:outline-none`}
-            >
-              {difficulty}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-
-    {/* Filtra per tempo - Destra su XL */}
-    <div className="flex justify-center xl:justify-end">
-      <div>
-        <h4 className="text-sm font-semibold text-white-600">Tempo di preparazione:</h4>
-        <div className="flex gap-2 mt-2 flex-wrap justify-center xl:justify-end">
-          {[15, 30, 45, 60, 90].map((time) => (
-            <button
-              key={time}
-              style={{ marginRight: "5px", marginTop: "5px" }}
-              onClick={() => {
-                setTimeFilter(time);
-                applyFilters(categoryFilter, difficultyFilter, time);
-              }}
-              className={`px-1 py-1 rounded-full ${
-                time === timeFilter
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white text-purple-600 border'
-              } outline-none focus:outline-none`}
-            >
-              {time}'
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-
-  </div>
-)}
+      )}
 
       {/* Lista Piatti */}
-      <div style={{ marginTop: "30px" }} className="mb-4 w-full px-6">
+      <div style={{ marginTop: '0px' }} className="mb-4 w-full px-6">
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 w-full">
           {filteredDishes.map((dish: any, index: number) => (
             <div
