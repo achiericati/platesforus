@@ -4,4 +4,24 @@
 
 html, body, #root {
     height: 100%;
-  }  
+  }
+  
+  /* Scrollbar personalizzata */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #c084fc; /* Colore viola, adattalo al tuo tema */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a855f7; /* Viola leggermente più scuro per l'hover */
+}

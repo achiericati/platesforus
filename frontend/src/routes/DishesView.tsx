@@ -82,7 +82,7 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
 
       <div
         className="overflow-y-auto w-full px-6 py-4 scrollable-cards flex-grow"
-        style={{ maxHeight: showFilters ? 'calc(100vh - 300px)' : 'calc(100vh - 210px)' }}
+        style={{ maxHeight: showFilters ? 'calc(100vh - 255px)' : 'calc(100vh - 210px)' }}
       >
         <DishesList
           categoryFilter={categoryFilter}
