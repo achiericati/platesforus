@@ -254,55 +254,68 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
       </div>
 
       {/* Modal */}
-        {/* Modal con inline styles */}
-        {selectedDish && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            color: 'black',
-            padding: '1.5rem',
-            borderRadius: '0.5rem',
-            width: '90%',
-            maxWidth: '32rem',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)'
-          }}>
-            <h4 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>{selectedDish.name}</h4>
-            <p style={{ marginBottom: '0.5rem' }}><strong>Categoria:</strong> {selectedDish.category}</p>
-            <p style={{ marginBottom: '0.5rem' }}><strong>Difficoltà:</strong> {selectedDish.difficulty}</p>
-            <p style={{ marginBottom: '0.5rem' }}><strong>Tempo di preparazione:</strong> {selectedDish.prepTime} min</p>
-            <p style={{ marginBottom: '1rem' }}><strong>Ricetta:</strong> {selectedDish.notes || 'Nessuna ricetta disponibile'}</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-            <button
-              onClick={() => alert('Modifica piatto')}
-              style={{marginRight: '5px'}}
-              className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-purple-700 transition-colors text-sm"
-            >
-              Modifica
-            </button>
+      {selectedDish && (
+  <div style={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999
+  }}>
+    <div style={{
+      backgroundColor: 'white',
+      color: 'black',
+      padding: '1.5rem',
+      borderRadius: '0.5rem',
+      width: '90%',
+      maxWidth: '32rem',
+      maxHeight: '90vh',
+      display: 'flex',
+      flexDirection: 'column',
+      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)'
+    }}>
+      <h4 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>{selectedDish.name}</h4>
+      <p style={{ marginBottom: '0.5rem' }}><strong>Categoria:</strong> {selectedDish.category}</p>
+      <p style={{ marginBottom: '0.5rem' }}><strong>Difficoltà:</strong> {selectedDish.difficulty}</p>
+      <p style={{ marginBottom: '0.5rem' }}><strong>Tempo di preparazione:</strong> {selectedDish.prepTime} min</p>
 
-            <button
-              onClick={() => setSelectedDish(null)}
-              className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-600 transition-colors text-sm"
-            >
-              Chiudi
-            </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ✅ Campo scrollabile */}
+      <div style={{
+        flexGrow: 1,
+        overflowY: 'auto',
+        maxHeight: '60vh', // max altezza per la ricetta (puoi aumentare o ridurre)
+        marginBottom: '1rem',
+        paddingRight: '0.5rem'
+      }}>
+        <p><strong>Ricetta:</strong></p>
+        <p style={{ marginTop: '0.5rem' }}>{selectedDish.notes || 'Nessuna ricetta disponibile'}</p>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+        <button
+          style={{ marginRight: '5px' }}
+          onClick={() => alert('Modifica piatto')}
+          className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-purple-700 transition-colors text-sm"
+        >
+          Modifica
+        </button>
+
+        <button
+          onClick={() => setSelectedDish(null)}
+          className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-600 transition-colors text-sm"
+        >
+          Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
     </section>
   );
