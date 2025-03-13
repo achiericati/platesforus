@@ -39,15 +39,12 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
     setFilteredDishes(filtered);
   };
 
-  // Filtri per categoria
   const categories = ['All', 'Primo', 'Secondo', 'Contorno', 'Dolce'];
 
-  // Difficoltà
   const difficulties = ['All', 'Facile', 'Media', 'Difficile', 'Molto Difficile'];
 
   return (
     <section className="flex flex-col items-center text-white py-6 mt-6 rounded-lg shadow-lg max-w-full flex-1">
-      {/* Bottone Indietro */}
       <button
         onClick={onBackClick}
         className="absolute top-20 left-4 bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors"
@@ -55,7 +52,6 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
         ← Indietro
       </button>
 
-      {/* Bottone Aggiungi Nuovo Piatto */}
       <button
         onClick={onAddNewClick}
         className="absolute top-20 right-4 bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors"
@@ -65,17 +61,17 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
 
       <h3 className="text-2xl font-semibold mb-4">Gestisci i tuoi piatti</h3>
 
-      {/* Filtri */}
-      <div className="flex gap-4 mb-6">
+      <div style={{padding:"30px", marginBottom:"10px"}} className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-6 w-full">
         {/* Filtra per categoria */}
-        <div>
-          <h4 className="text-lg font-semibold text-purple-600">Categoria:</h4>
+        <div >
+          <h4 className="text-lg font-semibold text-white-600">Categoria:</h4>
           <div className="flex gap-2 mt-2">
             {categories.map((category) => (
               <button
                 key={category}
+                style={{marginRight:"5px"}}
                 onClick={() => { setCategoryFilter(category); applyFilters(category, difficultyFilter, timeFilter); }}
-                className={`px-4 py-2 rounded-full ${category === categoryFilter ? 'bg-purple-600 text-white' : 'bg-white text-purple-600 border'}`}
+                className={`px-4 py-2 rounded-full ${category === categoryFilter ? 'bg-purple-600 text-white' : 'bg-white text-purple-600'} outline-none focus:outline-none`}
               >
                 {category}
               </button>
@@ -84,14 +80,15 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
         </div>
 
         {/* Filtra per difficoltà */}
-        <div>
-          <h4 className="text-lg font-semibold text-purple-600">Difficoltà:</h4>
+        <div >
+          <h4 className="text-lg font-semibold text-white-600">Difficoltà:</h4>
           <div className="flex gap-2 mt-2">
             {difficulties.map((difficulty) => (
               <button
                 key={difficulty}
+                style={{marginRight:"5px"}}
                 onClick={() => { setDifficultyFilter(difficulty); applyFilters(categoryFilter, difficulty, timeFilter); }}
-                className={`px-4 py-2 rounded-full ${difficulty === difficultyFilter ? 'bg-purple-600 text-white' : 'bg-white text-purple-600 border'}`}
+                className={`px-4 py-2 rounded-full ${difficulty === difficultyFilter ? 'bg-purple-600 text-white' : 'bg-white text-purple-600 border'} outline-none focus:outline-none`}
               >
                 {difficulty}
               </button>
@@ -100,14 +97,15 @@ const DishesList = ({ dishes, onBackClick, onAddNewClick }: any) => {
         </div>
 
         {/* Filtra per tempo */}
-        <div>
-          <h4 className="text-lg font-semibold text-purple-600">Tempo di preparazione:</h4>
+        <div >
+          <h4 className="text-lg font-semibold text-white-600">Tempo di preparazione:</h4>
           <div className="flex gap-2 mt-2">
             {[15, 30, 45, 60, 90].map((time) => (
               <button
                 key={time}
+                style={{marginRight:"5px"}}
                 onClick={() => { setTimeFilter(time); applyFilters(categoryFilter, difficultyFilter, time); }}
-                className={`px-4 py-2 rounded-full ${time === timeFilter ? 'bg-purple-600 text-white' : 'bg-white text-purple-600 border'}`}
+                className={`px-4 py-2 rounded-full ${time === timeFilter ? 'bg-purple-600 text-white' : 'bg-white text-purple-600 border'} outline-none focus:outline-none`}
               >
                 {time} min
               </button>
