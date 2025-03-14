@@ -7,5 +7,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   ping: () => ipcRenderer.invoke('ping'),
   getAllDishes: () => ipcRenderer.invoke('getAllDishes'),
   deleteDish: (id: number) => ipcRenderer.invoke('deleteDish', id),
-  addDish: (dish: Dish) => ipcRenderer.invoke('addDish', dish)
+  addDish: (dish: Dish) => ipcRenderer.invoke('addDish', dish),
+  updateDish: (dish: Dish) => ipcRenderer.invoke('updateDish', dish)
 });

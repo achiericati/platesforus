@@ -1,0 +1,146 @@
+import React, { useState, useEffect } from 'react';
+import { Dish } from '../../../electron/database/interfaces';
+
+interface AddDishModalProps {
+  onClose: () => void;
+  onSave: (dish: Dish, isEdit: boolean) => void;
+  dishToEdit?: Dish;
+}
+
+const AddOrUpdateDishModal: React.FC<AddDishModalProps> = ({ onClose, onSave, dishToEdit }) => {
+  const [name, setName] = useState('');
+  const [category, setCategory] = useState('Primo');
+  const [difficulty, setDifficulty] = useState('Facile');
+  const [prepTime, setPrepTime] = useState<number>(0);
+  const [recipe, setRecipe] = useState('');
+
+  useEffect(() => {
+    if (dishToEdit) {
+      setName(dishToEdit.name);
+      setCategory(dishToEdit.category);
+      setDifficulty(dishToEdit.difficulty);
+      setPrepTime(dishToEdit.prepTime);
+      setRecipe(dishToEdit.recipe || '');
+    } else {
+      setName('');
+      setCategory('Primo');
+      setDifficulty('Facile');
+      setPrepTime(0);
+      setRecipe('');
+    }
+  }, [dishToEdit]);
+
+  const handleSubmit = () => {
+    if (!name.trim()) {
+      alert('Il nome è obbligatorio');
+      return;
+    }
+
+    const updatedDish: Dish = {
+      id: dishToEdit ? dishToEdit.id : 0,
+      name,
+      category,
+      difficulty,
+      prepTime,
+      recipe
+    };
+
+    onSave(updatedDish, !!dishToEdit);
+  };
+
+  const modalTitle = dishToEdit ? 'Modifica Piatto' : 'Aggiungi Nuovo Piatto';
+  const buttonText = dishToEdit ? 'Salva Modifiche' : 'Aggiungi Piatto';
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+      <div className="bg-white text-black rounded-2xl shadow-lg w-full max-w-lg p-8 flex flex-col gap-4 animate-fade-in">
+
+        <h3 className="text-2xl font-bold text-center">{modalTitle}</h3>
+
+        {/* Nome */}
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-medium">Nome</span>
+          <input
+            type="text"
+            placeholder="Nome del piatto"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+          />
+        </label>
+
+        {/* Categoria */}
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-medium">Categoria</span>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+          >
+            <option value="Primo">Primo</option>
+            <option value="Secondo">Secondo</option>
+            <option value="Contorno">Contorno</option>
+            <option value="Dolce">Dolce</option>
+          </select>
+        </label>
+
+        {/* Difficoltà */}
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-medium">Difficoltà</span>
+          <select
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+          >
+            <option value="Facile">Facile</option>
+            <option value="Media">Media</option>
+            <option value="Difficile">Difficile</option>
+          </select>
+        </label>
+
+        {/* Tempo di preparazione */}
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-medium">Tempo di preparazione (minuti)</span>
+          <input
+            type="number"
+            placeholder="Tempo di preparazione (minuti)"
+            value={prepTime}
+            onChange={(e) => setPrepTime(parseInt(e.target.value))}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+          />
+        </label>
+
+        {/* Ricetta */}
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-medium">Ricetta / Note</span>
+          <textarea
+            placeholder="Inserisci la ricetta o le note..."
+            value={recipe}
+            onChange={(e) => setRecipe(e.target.value)}
+            rows={4}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition resize-none"
+          />
+        </label>
+
+        {/* Bottoni */}
+        <div className="flex justify-center gap-4 mt-4">
+          <button
+            onClick={handleSubmit}
+            className="bg-purple-600 text-white font-semibold px-6 py-2 rounded-full shadow-md hover:bg-purple-700 transition-colors text-sm outline-none focus:outline-none"
+          >
+            {buttonText}
+          </button>
+
+          <button
+            onClick={onClose}
+            className="bg-gray-400 text-white font-semibold px-6 py-2 rounded-full shadow-md hover:bg-gray-500 transition-colors text-sm outline-none focus:outline-none"
+          >
+            Annulla
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddOrUpdateDishModal;

@@ -60,6 +60,16 @@ app.whenReady().then(async () => {
       throw error;
     }
   });
+
+  ipcMain.handle('updateDish', async (event, newDish) => {
+    try {
+      await dataContext.updateDish(newDish);
+      return;
+    } catch (error) {
+      console.error('Errore durante la modifica del piatto:', error);
+      throw error;
+    }
+  });
   
 
   app.on('activate', () => {

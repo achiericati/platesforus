@@ -66,6 +66,28 @@ export const addDish = async (newDish: Dish) => {
   }
 };
 
+export const updateDish = async (updatedDish: Dish) => {
+  try {
+    await db.run(
+      `UPDATE dish 
+       SET name = ?, category = ?, difficulty = ?, prepTime = ?, recipe = ?
+       WHERE id = ?`,
+      updatedDish.name,
+      updatedDish.category,
+      updatedDish.difficulty,
+      updatedDish.prepTime,
+      updatedDish.recipe,
+      updatedDish.id
+    );
+
+    return;
+
+  } catch (error) {
+    console.error('Errore durante l\'update del piatto:', error);
+    throw error;
+  }
+};
+
 export const deleteDish = async (id: number) => {
   await db.run('DELETE FROM dish WHERE id = ?', [id]);
 };

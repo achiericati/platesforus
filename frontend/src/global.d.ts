@@ -7,6 +7,7 @@ declare global {
       getAllDishes: () => Promise<Dish[]>;
       deleteDish: (id: number) => Promise<void>;
       addDish: (dish: Dish) => Promise<Dish>;
+      updateDish: (dish: Dish) => Promise<void>;
     };
   }
 }
