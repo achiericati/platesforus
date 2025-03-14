@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import DishModal from '../components/DishModal';
 import DishesList from '../components/DishesList';
 import FiltersSection from '../components/FiltersSection';
+import { Dish } from '../../../electron/database/interfaces';
 
 const DishesView = ({ onBackClick, onAddNewClick }: any) => {
-  // Stati principali
   const [dishes, setDishes] = useState<any[]>([]);
   const [filteredDishes, setFilteredDishes] = useState<any[]>([]);
   const [selectedDish, setSelectedDish] = useState<any>(null);
 
-  // Stati per i filtri
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('All');
   const [timeFilter, setTimeFilter] = useState<number | null>(null);
@@ -19,7 +18,6 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
     const loadDishes = async () => {
       try {
         const dishesFromDb = await window.electronAPI.getAllDishes();
-        console.log("DISHES AHAHHA ", dishesFromDb)
         setDishes(dishesFromDb);
         setFilteredDishes(dishesFromDb);
       } catch (error) {
@@ -30,20 +28,30 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
     loadDishes();
   }, []);
 
-  // Gestione click su un piatto
   const onDishClick = (dish: any) => setSelectedDish(dish);
 
-  // Placeholder funzione per modifica piatto
-  const editDish = (dish: any) => {
+  const editDish = async (dish: any) => {
     alert('edit dish');
   };
 
-  // Chiudi modale
+  const deleteDish = async (dish: Dish) => {
+    try {
+      await window.electronAPI.deleteDish(dish.id);
+      let updatedDishes = [...dishes]
+      updatedDishes = updatedDishes.filter(d => d.id !== dish.id);
+      setDishes(updatedDishes);
+      applyFilters(categoryFilter, difficultyFilter, timeFilter, updatedDishes);
+      closeModal();
+  
+    } catch (error) {
+      console.error('Errore durante l\'eliminazione del piatto:', error);
+    }
+  };
+
   const closeModal = () => setSelectedDish(null);
 
-  // Applica filtri sui piatti
-  const applyFilters = (categoryValue: string, difficultyValue: string, timeValue: number | null) => {
-    let filtered = [...dishes];
+  const applyFilters = (categoryValue: string, difficultyValue: string, timeValue: number | null, newDishes?: Dish[]) => {
+    let filtered = newDishes ? [...newDishes] : [...dishes];
     if (categoryValue !== 'All') filtered = filtered.filter(d => d.category === categoryValue);
     if (difficultyValue !== 'All') filtered = filtered.filter(d => d.difficulty === difficultyValue);
     if (timeValue !== null) filtered = filtered.filter(d => d.prepTime <= timeValue);
@@ -51,7 +59,6 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
     setFilteredDishes(filtered);
   };
 
-  // Reset dei filtri ai valori di default
   const resetFilters = () => {
     setCategoryFilter('All');
     setDifficultyFilter('All');
@@ -59,7 +66,6 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
     applyFilters('All', 'All', null);
   };
 
-  // Liste categorie, difficoltà e icone (puoi spostarle fuori se preferisci)
   const categories = ['All', 'Primo', 'Secondo', 'Contorno', 'Dolce'];
   const difficulties = ['All', 'Facile', 'Media', 'Difficile'];
   const categoryIcons = { 'Primo': '🍝', 'Secondo': '🍖', 'Contorno': '🥗', 'Dolce': '🍰' };
@@ -105,6 +111,8 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
       >
         <DishesList
           categoryFilter={categoryFilter}
+          difficultyFilter={difficultyFilter}   
+          timeFilter={timeFilter}
           categories={categories}
           categoryIcons={categoryIcons}
           onDishClick={onDishClick}
@@ -117,7 +125,8 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
         <DishModal
           dish={selectedDish}
           onClose={closeModal}
-          onEdit={editDish}
+          onEditDish={editDish}
+          onDeleteDish={deleteDish}
         />
       )}
     </section>

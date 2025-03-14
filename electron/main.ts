@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import { setupDatabase, insertMockDish } from './database/db';
+import { setupDatabase } from './database/db';
 import dataContext from './database/dataContext';
 
 const IS_DEV = true
@@ -29,8 +29,6 @@ app.whenReady().then(async () => {
 
   await setupDatabase(); 
 
-  await insertMockDish(); // MOCK TO REMOVE
-
   createWindow();
 
   ipcMain.handle('getAllDishes', async () => {
@@ -43,8 +41,15 @@ app.whenReady().then(async () => {
     }
   });
 
-  // ..altri 
-  
+  ipcMain.handle('deleteDish', async (event, dishId) => {
+    try {
+      await dataContext.deleteDish(dishId);
+      return;
+    } catch (error) {
+      console.error('Errore eliminazione piatto:', error);
+      return;
+    }
+  });  
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

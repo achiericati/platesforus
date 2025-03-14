@@ -43,15 +43,8 @@ export const fetchAllDishesFromDb = async () => {
   }
 };
 
-export const insertMockDish = async () => {  
-  // Dati del piatto mock
-  const name = 'Pizza Margherita';
-  const category = 'Primo';
-  const prepTime = 30;
-  const recipe = 'Una pizza semplice con pomodoro e mozzarella.';
-  
-  await db.run('INSERT INTO dishes (name, category, prepTime, recipe) VALUES (?, ?, ?, ?)', [name, category, prepTime, recipe]);
-  console.log('Piatto mock inserito!');
+export const deleteDish = async (id: number) => {
+  await db.run('DELETE FROM dishes WHERE id = ?', [id]);
 };
 
 export const getDb = () => db;

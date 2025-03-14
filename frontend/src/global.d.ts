@@ -1,10 +1,11 @@
-export {}; // Serve a TypeScript per trattarlo come un modulo.
+export {};
 
 declare global {
   interface Window {
     electronAPI: {
       ping: () => Promise<string>;
-      getAllDishes: () => Promise<any[]>;
+      getAllDishes: () => Promise<Dish[]>;
+      deleteDish: (id: number) => Promise<void>;
     };
   }
 }

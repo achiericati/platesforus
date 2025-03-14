@@ -1,12 +1,21 @@
 import React from 'react';
-import { DishListItemsProps } from '../../../electron/database/interfaces';
+import { Dish } from '../../../electron/database/interfaces';
 
-interface Props extends DishListItemsProps {
-  dishes: any[]; // Aggiungi questo prop per sapere se esistono piatti nel DB
+interface DishListItemsProps {
+  categoryFilter: string;
+  categories: string[];
+  categoryIcons: any;
+  onDishClick: (dish: Dish) => void;
+  filteredDishes: Dish[];
+  dishes: Dish[];
+  difficultyFilter: string;
+  timeFilter: number | null;
 }
 
-const DishListItems: React.FC<Props> = ({
+const DishListItems: React.FC<DishListItemsProps> = ({
   categoryFilter,
+  difficultyFilter,
+  timeFilter,
   categories,
   categoryIcons,
   onDishClick,
@@ -15,10 +24,36 @@ const DishListItems: React.FC<Props> = ({
 }) => {
   const noDishesExist = dishes.length === 0;
 
+  const buildNoResultsMessage = (): string => {
+    let message = 'Nessun';
+    if (categoryFilter !== 'All') {
+      message += ` ${categoryFilter.toLowerCase()}`;
+    } else {
+      message += ' piatto';
+    }
+    if (difficultyFilter !== 'All') {
+      message += ` con difficoltà ${difficultyFilter.toLowerCase()}`;
+    }
+    if (timeFilter !== null) {
+      message += ` con tempo di preparazione inferiore a ${timeFilter} minuti`;
+    }
+    message += ' inserito';
+
+    return message.charAt(0).toUpperCase() + message.slice(1);
+  };
+
   if (noDishesExist) {
     return (
       <div className="text-white text-center mt-10 text-lg font-semibold">
         Nessun piatto inserito
+      </div>
+    );
+  }
+
+  if (!noDishesExist && filteredDishes.length === 0) {
+    return (
+      <div className="text-white text-center mt-10 text-lg font-semibold">
+        {buildNoResultsMessage()}
       </div>
     );
   }
