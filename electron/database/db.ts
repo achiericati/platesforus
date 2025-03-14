@@ -20,26 +20,38 @@ export const setupDatabase = async () => {
     CREATE TABLE IF NOT EXISTS dishes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      category TEXT,
+      category VARCHAR(45),
       prepTime INTEGER,
-      notes TEXT
+      recipe TEXT
     )
   `);
 
   console.log('Database pronto (sqlite3 async)');
 };
 
-export const insertMockDish = async () => {
-  
+export const fetchAllDishesFromDb = async () => {
+  if (!db) {
+    throw new Error('Database non inizializzato. Chiama prima setupDatabase().');
+  }
+
+  try {
+    const dishes = await db.all('SELECT * FROM dishes');
+    return dishes;
+  } catch (error) {
+    console.error('Errore durante il recupero dei piatti:', error);
+    throw error;
+  }
+};
+
+export const insertMockDish = async () => {  
   // Dati del piatto mock
   const name = 'Pizza Margherita';
   const category = 'Primo';
   const prepTime = 30;
-  const notes = 'Una pizza semplice con pomodoro e mozzarella.';
+  const recipe = 'Una pizza semplice con pomodoro e mozzarella.';
   
-  await db.run('INSERT INTO dishes (name, category, prepTime, notes) VALUES (?, ?, ?, ?)', [name, category, prepTime, notes]);
+  await db.run('INSERT INTO dishes (name, category, prepTime, recipe) VALUES (?, ?, ?, ?)', [name, category, prepTime, recipe]);
   console.log('Piatto mock inserito!');
 };
-
 
 export const getDb = () => db;

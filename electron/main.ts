@@ -1,6 +1,9 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { setupDatabase, insertMockDish } from './database/db';
+import dataContext from './database/dataContext';
+
+const IS_DEV = true
 
 let win: BrowserWindow;
 
@@ -9,14 +12,14 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: true, // Usa questo solo se necessario
-      contextIsolation: false, // Disabilita per maggiore compatibilità
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: false,
     },
   });
 
-  // Carica la pagina di Vite
-  if (process.env.NODE_ENV === 'development') {
-    win.loadURL('http://localhost:5173/');
+  if (IS_DEV) {
+    win.loadURL('http://localhost:5173');
   } else {
     win.loadFile(path.join(__dirname, 'index.html'));
   }
@@ -26,9 +29,16 @@ app.whenReady().then(async () => {
 
   await setupDatabase(); 
 
-  await insertMockDish();
+  await insertMockDish(); // MOCK TO REMOVE
 
   createWindow();
+
+  ipcMain.handle('getAllDishes', async () => {
+    return await dataContext.getAllDishes();
+  });
+
+  // ..altri 
+  
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

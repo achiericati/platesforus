@@ -12,5 +12,5 @@
       "isolatedModules": true,
       "noEmit": true
     },
-    "include": ["src", "src/types"]
+    "include": ["src", "src/types", "../electron/database/interfaces.ts", "../electron/database/dataContext.ts"]
   }

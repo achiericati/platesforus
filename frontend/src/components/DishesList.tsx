@@ -1,12 +1,5 @@
 import React from 'react';
-
-interface DishListItemsProps {
-  categoryFilter: string;
-  categories: string[];
-  categoryIcons: any;
-  onDishClick: (dish: any) => void;
-  filteredDishes: any[];
-}
+import { DishListItemsProps } from '../../../electron/database/interfaces';
 
 const DishListItems: React.FC<DishListItemsProps> = ({
   categoryFilter,

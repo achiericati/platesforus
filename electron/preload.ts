@@ -1,6 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
-contextBridge.exposeInMainWorld('electron', {
-  // Esempio base per testare comunicazione
+console.log('Preload script caricato!'); // <-- per debug
+
+contextBridge.exposeInMainWorld('electronAPI', {
   ping: () => ipcRenderer.invoke('ping'),
+  getAllDishes: () => ipcRenderer.invoke('getAllDishes')
 });
