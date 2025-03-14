@@ -13,9 +13,9 @@ function createWindow() {
     height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
+      nodeIntegration: false,     
+      contextIsolation: true
+    }    
   });
 
   if (IS_DEV) {
@@ -34,7 +34,13 @@ app.whenReady().then(async () => {
   createWindow();
 
   ipcMain.handle('getAllDishes', async () => {
-    return await dataContext.getAllDishes();
+    try {
+      const dishes = await dataContext.getAllDishes();
+      return dishes;
+    } catch (error) {
+      console.error('Errore in ipcMain handle getAllDishes:', error);
+      throw error;
+    }
   });
 
   // ..altri 

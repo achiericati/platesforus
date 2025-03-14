@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import DishModal from '../components/DishModal';
 import DishesList from '../components/DishesList';
 import FiltersSection from '../components/FiltersSection';
-import dataContext from '../../../electron/database/dataContext';
 
 const DishesView = ({ onBackClick, onAddNewClick }: any) => {
   // Stati principali
@@ -16,11 +15,11 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
   const [timeFilter, setTimeFilter] = useState<number | null>(null);
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  // Carica i piatti dal database al primo montaggio del componente
   useEffect(() => {
     const loadDishes = async () => {
       try {
         const dishesFromDb = await window.electronAPI.getAllDishes();
+        console.log("DISHES AHAHHA ", dishesFromDb)
         setDishes(dishesFromDb);
         setFilteredDishes(dishesFromDb);
       } catch (error) {
@@ -110,6 +109,7 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
           categoryIcons={categoryIcons}
           onDishClick={onDishClick}
           filteredDishes={filteredDishes}
+          dishes={dishes}
         />
       </div>
 
