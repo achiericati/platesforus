@@ -46,10 +46,21 @@ app.whenReady().then(async () => {
       await dataContext.deleteDish(dishId);
       return;
     } catch (error) {
-      console.error('Errore eliminazione piatto:', error);
+      console.error('Errore durante la eliminazione piatto:', error);
       return;
     }
-  });  
+  });
+
+  ipcMain.handle('addDish', async (event, newDish) => {
+    try {
+      const dish = await dataContext.addDish(newDish);
+      return dish;
+    } catch (error) {
+      console.error('Errore durante la creazione del piatto:', error);
+      throw error;
+    }
+  });
+  
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

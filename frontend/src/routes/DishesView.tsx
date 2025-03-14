@@ -3,12 +3,13 @@ import DishModal from '../components/DishModal';
 import DishesList from '../components/DishesList';
 import FiltersSection from '../components/FiltersSection';
 import { Dish } from '../../../electron/database/interfaces';
+import AddDishModal from '../components/AddDishModal';
 
-const DishesView = ({ onBackClick, onAddNewClick }: any) => {
+const DishesView = ({ onBackClick }: any) => {
   const [dishes, setDishes] = useState<any[]>([]);
   const [filteredDishes, setFilteredDishes] = useState<any[]>([]);
   const [selectedDish, setSelectedDish] = useState<any>(null);
-
+  const [showAddModal, setShowAddModal] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('All');
   const [timeFilter, setTimeFilter] = useState<number | null>(null);
@@ -29,6 +30,19 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
   }, []);
 
   const onDishClick = (dish: any) => setSelectedDish(dish);
+
+  const saveDish = async (newDish: Dish) => {
+    try {
+      const dish = await window.electronAPI.addDish(newDish);
+      const updatedDishes = [...dishes, dish];
+      setDishes(updatedDishes);
+      applyFilters(categoryFilter, difficultyFilter, timeFilter, updatedDishes);
+      setShowAddModal(false);
+    } catch (error) {
+      console.error('Errore durante il salvataggio del piatto:', error);
+    }
+  };
+  
 
   const editDish = async (dish: any) => {
     alert('edit dish');
@@ -83,7 +97,7 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
         <h3 className="text-xl font-semibold text-white text-center">Gestisci i tuoi piatti</h3>
 
         <button
-          onClick={onAddNewClick}
+          onClick={() => setShowAddModal(true)}
           className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
         >
           Aggiungi Nuovo Piatto
@@ -127,6 +141,13 @@ const DishesView = ({ onBackClick, onAddNewClick }: any) => {
           onClose={closeModal}
           onEditDish={editDish}
           onDeleteDish={deleteDish}
+        />
+      )}
+
+      {showAddModal && (
+        <AddDishModal
+          onClose={() => setShowAddModal(false)}
+          onSave={saveDish}
         />
       )}
     </section>

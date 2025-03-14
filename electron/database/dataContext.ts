@@ -1,5 +1,5 @@
 import { Dish } from "./interfaces";
-import { fetchAllDishesFromDb, deleteDish } from './db';
+import { fetchAllDishesFromDb, deleteDish, addDish } from './db';
 
 
 class DataContext {
@@ -16,6 +16,17 @@ class DataContext {
       return dishes;
     } catch (error) {
       console.error('error during dishes fetching:', error);
+      throw error;
+    }
+  }
+
+  public async addDish(dish: Dish): Promise<Dish> {
+    try {
+      const newDish = await addDish(dish);
+      this.invalidateDishesCache();
+      return newDish;
+    } catch (error) {
+      console.error('error during dish deletion:', error);
       throw error;
     }
   }

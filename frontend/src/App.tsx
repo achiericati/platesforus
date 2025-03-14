@@ -12,10 +12,6 @@ function App() {
     setShowManageDishes(false);
   };
 
-  const handleAddNewClick = () => {
-    alert('Mostra form per aggiungere un piatto');
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white font-sans">
       {!showManageDishes &&
@@ -46,7 +42,6 @@ function App() {
       {showManageDishes && (
         <DishesView
           onBackClick={handleBackClick}
-          onAddNewClick={handleAddNewClick}
         />
       )}
 

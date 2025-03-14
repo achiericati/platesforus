@@ -2,6 +2,7 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 import { app } from 'electron';
 import { open, Database } from 'sqlite'; // usa l'interfaccia async di sqlite
+import { Dish } from './interfaces';
 
 sqlite3.verbose();
 
@@ -17,10 +18,11 @@ export const setupDatabase = async () => {
   });
 
   await db.exec(`
-    CREATE TABLE IF NOT EXISTS dishes (
+    CREATE TABLE IF NOT EXISTS dish (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       category VARCHAR(45),
+      difficulty VARCHAR(45),
       prepTime INTEGER,
       recipe TEXT
     )
@@ -35,7 +37,7 @@ export const fetchAllDishesFromDb = async () => {
   }
 
   try {
-    const dishes = await db.all('SELECT * FROM dishes');
+    const dishes = await db.all('SELECT * FROM dish');
     return dishes;
   } catch (error) {
     console.error('Errore durante il recupero dei piatti:', error);
@@ -43,8 +45,29 @@ export const fetchAllDishesFromDb = async () => {
   }
 };
 
+export const addDish = async (newDish: Dish) => {
+  try {
+    const result = await db.run(
+      'INSERT INTO dish (name, category, difficulty, prepTime, recipe) VALUES (?, ?, ?, ?, ?)',
+      newDish.name,
+      newDish.category,
+      newDish.difficulty,
+      newDish.prepTime,
+      newDish.recipe
+    );
+    return {
+      ...newDish,
+      id: result.lastID || 0
+    };
+
+  } catch (error) {
+    console.error('Errore durante la creazione del piatto:', error);
+    throw error;
+  }
+};
+
 export const deleteDish = async (id: number) => {
-  await db.run('DELETE FROM dishes WHERE id = ?', [id]);
+  await db.run('DELETE FROM dish WHERE id = ?', [id]);
 };
 
 export const getDb = () => db;

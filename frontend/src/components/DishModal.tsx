@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { Dish } from '../../../electron/database/interfaces';
 
 interface DishModalProps {
-  dish: any;
+  dish: Dish;
   onClose: () => void;
-  onEditDish: (dish: any) => void;
-  onDeleteDish: (dish: any) => void;
+  onEditDish: (dish: Dish) => void;
+  onDeleteDish: (dish: Dish) => void;
 }
 
 const DishModal: React.FC<DishModalProps> = ({ dish, onClose, onEditDish, onDeleteDish }) => {
@@ -49,7 +50,7 @@ const DishModal: React.FC<DishModalProps> = ({ dish, onClose, onEditDish, onDele
           marginBottom: '1rem',
           paddingRight: '0.5rem',
         }}>
-          <p style={{ marginTop: '0.5rem' }}>{dish.notes || 'Nessuna ricetta disponibile'}</p>
+          <p style={{ marginTop: '0.5rem' }}>{dish.recipe || 'Nessuna ricetta disponibile'}</p>
         </div>
 
         {/* Se l'utente ha cliccato su "Elimina", mostra il prompt di conferma */}
