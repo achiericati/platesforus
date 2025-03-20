@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import DishesView from './routes/DishesView';
 
+// Tipi per i dati
 type Meal = string;
 type DayMenu = { pranzo: Meal; cena: Meal; };
 type WeeklyMenuType = { [giorno: string]: DayMenu; };
 
+// Menu settimanale mockato
 const mockWeeklyMenu: WeeklyMenuType = {
   lunedì: { pranzo: 'Pasta al Pesto', cena: 'Pollo al forno' },
   martedì: { pranzo: 'Insalata di riso', cena: 'Zuppa di legumi' },
@@ -15,30 +18,60 @@ const mockWeeklyMenu: WeeklyMenuType = {
   domenica: { pranzo: 'Arrosto di vitello', cena: 'Minestrone' },
 };
 
+// Gradients e icone per i giorni
+const gradients = [
+  'from-pink-400 to-purple-500',
+  'from-purple-400 to-indigo-500',
+  'from-indigo-400 to-blue-500',
+  'from-green-400 to-teal-500',
+  'from-blue-400 to-cyan-500',
+  'from-red-400 to-pink-500',
+  'from-yellow-400 to-orange-500'
+];
+
+const icons = ['🍝', '🍲', '🍕', '🍔', '🥗', '🍛', '🥘'];
+
+// Componente WeeklyMenu migliorato
 interface WeeklyMenuProps {
   menu: WeeklyMenuType;
 }
 
 const WeeklyMenu: React.FC<WeeklyMenuProps> = ({ menu }) => {
   return (
-    <div className="flex flex-col px-4 py-8 space-y-4">
-      <h2 className="text-3xl font-bold text-center mb-6">Il tuo Menu Settimanale</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {Object.entries(menu).map(([giorno, pasti]) => (
-          <div
+    <div className="flex flex-col px-4 py-8 space-y-8">
+      <motion.h2
+        className="text-4xl font-bold text-center mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        Il tuo Menu Settimanale
+      </motion.h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {Object.entries(menu).map(([giorno, pasti], index) => (
+          <motion.div
             key={giorno}
-            className="bg-white bg-opacity-90 text-purple-800 rounded-xl shadow-lg p-6 hover:scale-105 transform transition-transform"
+            className={`bg-white bg-opacity-20 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20 transition-transform hover:scale-105 cursor-pointer
+              bg-gradient-to-br ${gradients[index % gradients.length]}`}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, type: 'spring', stiffness: 80 }}
           >
-            <h3 className="text-xl font-semibold mb-4">{giorno}</h3>
-            <div className="flex justify-between mb-2">
-              <span className="font-medium">Pranzo:</span>
-              <span>{pasti.pranzo}</span>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-semibold text-white">
+                {icons[index % icons.length]} {giorno.charAt(0).toUpperCase() + giorno.slice(1)}
+              </h3>
             </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Cena:</span>
-              <span>{pasti.cena}</span>
+
+            <div className="flex justify-between py-2 border-b border-white/30">
+              <span className="font-medium text-white">Pranzo:</span>
+              <span className="text-white">{pasti.pranzo}</span>
             </div>
-          </div>
+            <div className="flex justify-between py-2">
+              <span className="font-medium text-white">Cena:</span>
+              <span className="text-white">{pasti.cena}</span>
+            </div>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -64,12 +97,14 @@ const App: React.FC = () => {
       <header className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-lg">
         <h1 className="text-3xl font-semibold text-white">Plates For Us 🍽️</h1>
         {!showManageDishes && (
-          <button
+          <motion.button
             className="bg-white text-purple-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-200 transition-colors outline-none focus:outline-none"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleManageDishesClick}
           >
             Gestisci Piatti
-          </button>
+          </motion.button>
         )}
       </header>
 
@@ -79,27 +114,48 @@ const App: React.FC = () => {
           weeklyMenu ? (
             <div className="px-4 py-8">
               <WeeklyMenu menu={weeklyMenu} />
+
               <div className="flex justify-center mt-8">
-                <button
-                  className="bg-white text-purple-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-200 transition-colors outline-none focus:outline-none"
+                <motion.button
+                  className="relative inline-flex items-center justify-center px-6 py-3 overflow-hidden font-medium text-purple-600 rounded-lg shadow-md group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setWeeklyMenu(null)}
                 >
-                  Elimina Menu
-                </button>
+                  <span className="absolute inset-0 w-full h-full transition duration-300 ease-out transform translate-x-1 translate-y-1 bg-purple-500 group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
+                  <span className="absolute inset-0 w-full h-full bg-white border-2 border-purple-500 group-hover:bg-purple-500"></span>
+                  <span className="relative text-purple-600 group-hover:text-white">
+                    Elimina Menu
+                  </span>
+                </motion.button>
               </div>
             </div>
           ) : (
             <div className="flex flex-col justify-center items-center text-center px-6 py-12">
-              <h2 className="text-4xl font-bold text-white mb-6">Il tuo menu settimanale, semplice e veloce</h2>
-              <p className="text-lg text-white mb-10 max-w-lg mx-auto">
+              <motion.h2
+                className="text-4xl font-bold text-white mb-6"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                Il tuo menu settimanale, semplice e veloce
+              </motion.h2>
+              <motion.p
+                className="text-lg text-white mb-10 max-w-lg mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
                 Genera il piano pasti della settimana con i piatti che conosci e ami cucinare!
-              </p>
-              <button
+              </motion.p>
+
+              <motion.button
                 className="bg-white text-purple-600 text-lg font-bold px-10 py-4 rounded-full shadow-lg hover:bg-gray-100 transition-all"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setWeeklyMenu(mockWeeklyMenu)}
               >
                 Genera Menu Settimanale
-              </button>
+              </motion.button>
             </div>
           )
         )}
