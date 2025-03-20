@@ -31,7 +31,7 @@ const gradients = [
 
 const icons = ['🍝', '🍲', '🍕', '🍔', '🥗', '🍛', '🥘'];
 
-// Componente WeeklyMenu migliorato
+// Componente WeeklyMenu
 interface WeeklyMenuProps {
   menu: WeeklyMenuType;
 }
@@ -51,7 +51,7 @@ const WeeklyMenu: React.FC<WeeklyMenuProps> = ({ menu }) => {
         {Object.entries(menu).map(([giorno, pasti], index) => (
           <motion.div
             key={giorno}
-            className={`bg-white bg-opacity-20 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20 transition-transform hover:scale-105 cursor-pointer
+            className={`bg-white bg-opacity-20 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20 transition-transform hover:scale-105
               bg-gradient-to-br ${gradients[index % gradients.length]}`}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -93,40 +93,49 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white font-sans">
       
-      {/* HEADER */}
-      <header className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-lg">
-        <h1 className="text-3xl font-semibold text-white">Plates For Us 🍽️</h1>
-        {!showManageDishes && (
+      {/* HEADER - Mostralo solo se NON sei in gestione piatti */}
+      {!showManageDishes && (
+        <header className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-lg">
+          <h1 className="text-3xl font-semibold text-white">Plates For Us 🍽️</h1>
           <motion.button
-            className="bg-white text-purple-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-200 transition-colors outline-none focus:outline-none"
+            className="bg-white text-purple-600 font-semibold px-4 py-2 text-sm rounded-lg shadow hover:bg-gray-200 transition-colors outline-none focus:outline-none"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleManageDishesClick}
           >
             Gestisci Piatti
           </motion.button>
-        )}
-      </header>
+        </header>
+      )}
 
       {/* MAIN */}
       <main className="flex-1 overflow-y-auto">
-        {!showManageDishes && (
+        {showManageDishes ? (
+          <DishesView onBackClick={handleBackClick} />
+        ) : (
           weeklyMenu ? (
             <div className="px-4 py-8">
               <WeeklyMenu menu={weeklyMenu} />
 
-              <div className="flex justify-center mt-8">
+              <div className="flex justify-center gap-4 mt-8">
+                {/* Elimina Menu */}
                 <motion.button
-                  className="relative inline-flex items-center justify-center px-6 py-3 overflow-hidden font-medium text-purple-600 rounded-lg shadow-md group"
+                  className="bg-white text-purple-600 font-semibold px-4 py-2 text-sm rounded-lg shadow hover:bg-gray-200 transition-colors outline-none focus:outline-none"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setWeeklyMenu(null)}
                 >
-                  <span className="absolute inset-0 w-full h-full transition duration-300 ease-out transform translate-x-1 translate-y-1 bg-purple-500 group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
-                  <span className="absolute inset-0 w-full h-full bg-white border-2 border-purple-500 group-hover:bg-purple-500"></span>
-                  <span className="relative text-purple-600 group-hover:text-white">
-                    Elimina Menu
-                  </span>
+                  Elimina Menu
+                </motion.button>
+
+                {/* Modifica Menu */}
+                <motion.button
+                  className="bg-white text-purple-600 font-semibold px-4 py-2 text-sm rounded-lg shadow hover:bg-gray-200 transition-colors outline-none focus:outline-none"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => alert('Funzionalità in sviluppo! 🚧')}
+                >
+                  Modifica Menu
                 </motion.button>
               </div>
             </div>
@@ -149,7 +158,7 @@ const App: React.FC = () => {
               </motion.p>
 
               <motion.button
-                className="bg-white text-purple-600 text-lg font-bold px-10 py-4 rounded-full shadow-lg hover:bg-gray-100 transition-all"
+                className="bg-white text-purple-600 text-lg font-bold px-8 py-3 rounded-full shadow-lg hover:bg-gray-100 transition-all"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setWeeklyMenu(mockWeeklyMenu)}
@@ -158,10 +167,6 @@ const App: React.FC = () => {
               </motion.button>
             </div>
           )
-        )}
-
-        {showManageDishes && (
-          <DishesView onBackClick={handleBackClick} />
         )}
       </main>
 
