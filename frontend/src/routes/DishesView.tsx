@@ -13,6 +13,7 @@ const DishesView = ({ onBackClick }: any) => {
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('All');
   const [timeFilter, setTimeFilter] = useState<number | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ const DishesView = ({ onBackClick }: any) => {
         updatedDishes = updatedDishes.filter(d => d.id !== newDish.id);
         updatedDishes.push(newDish)
         setDishes(updatedDishes);
-        applyFilters(categoryFilter, difficultyFilter, timeFilter, updatedDishes);
+        applyFilters(categoryFilter, difficultyFilter, timeFilter, searchText, updatedDishes);
         setShowAddOrUpdateModal(false);
         closeModal();
       } catch (error) {
@@ -50,14 +51,13 @@ const DishesView = ({ onBackClick }: any) => {
         const dish = await window.electronAPI.addDish(newDish);
         const updatedDishes = [...dishes, dish];
         setDishes(updatedDishes);
-        applyFilters(categoryFilter, difficultyFilter, timeFilter, updatedDishes);
+        applyFilters(categoryFilter, difficultyFilter, timeFilter, searchText, updatedDishes);
         setShowAddOrUpdateModal(false);
       } catch (error) {
         console.error('Errore durante il salvataggio del piatto:', error);
       }
     }
   };
-  
 
   const editDish = async (dish: any) => {
     setShowAddOrUpdateModal(true);
@@ -69,7 +69,7 @@ const DishesView = ({ onBackClick }: any) => {
       let updatedDishes = [...dishes]
       updatedDishes = updatedDishes.filter(d => d.id !== dish.id);
       setDishes(updatedDishes);
-      applyFilters(categoryFilter, difficultyFilter, timeFilter, updatedDishes);
+      applyFilters(categoryFilter, difficultyFilter, timeFilter, searchText, updatedDishes);
       closeModal();
   
     } catch (error) {
@@ -79,11 +79,34 @@ const DishesView = ({ onBackClick }: any) => {
 
   const closeModal = () => setSelectedDish(null);
 
-  const applyFilters = (categoryValue: string, difficultyValue: string, timeValue: number | null, newDishes?: Dish[]) => {
+  const applyFilters = (
+    categoryValue: string,
+    difficultyValue: string,
+    timeValue: number | null,
+    searchValue: string = '',
+    newDishes?: Dish[]
+  ) => {
     let filtered = newDishes ? [...newDishes] : [...dishes];
-    if (categoryValue !== 'All') filtered = filtered.filter(d => d.category === categoryValue);
-    if (difficultyValue !== 'All') filtered = filtered.filter(d => d.difficulty === difficultyValue);
-    if (timeValue !== null) filtered = filtered.filter(d => d.prepTime <= timeValue);
+
+    if (categoryValue !== 'All') {
+      filtered = filtered.filter(d => d.category === categoryValue);
+    }
+
+    if (difficultyValue !== 'All') {
+      filtered = filtered.filter(d => d.difficulty === difficultyValue);
+    }
+
+    if (timeValue !== null) {
+      filtered = filtered.filter(d => d.prepTime <= timeValue);
+    }
+
+    if (searchValue.trim() !== '') {
+      const searchLower = searchValue.toLowerCase();
+      filtered = filtered.filter(d =>
+        d.name.toLowerCase().includes(searchLower) ||
+        d.description?.toLowerCase().includes(searchLower)
+      );
+    }
 
     setFilteredDishes(filtered);
   };
@@ -92,7 +115,8 @@ const DishesView = ({ onBackClick }: any) => {
     setCategoryFilter('All');
     setDifficultyFilter('All');
     setTimeFilter(null);
-    applyFilters('All', 'All', null);
+    setSearchText('');
+    applyFilters('All', 'All', null, '');
   };
 
   const categories = ['All', 'Primo', 'Secondo', 'Contorno', 'Dolce'];
@@ -126,9 +150,14 @@ const DishesView = ({ onBackClick }: any) => {
         categoryFilter={categoryFilter}
         difficultyFilter={difficultyFilter}
         timeFilter={timeFilter}
+        searchText={searchText}
         setCategoryFilter={setCategoryFilter}
         setDifficultyFilter={setDifficultyFilter}
         setTimeFilter={setTimeFilter}
+        setSearchText={(value: string) => {
+          setSearchText(value);
+          applyFilters(categoryFilter, difficultyFilter, timeFilter, value);
+        }}
         applyFilters={applyFilters}
         categories={categories}
         difficulties={difficulties}
@@ -140,7 +169,7 @@ const DishesView = ({ onBackClick }: any) => {
       >
         <DishesList
           categoryFilter={categoryFilter}
-          difficultyFilter={difficultyFilter}   
+          difficultyFilter={difficultyFilter}
           timeFilter={timeFilter}
           categories={categories}
           categoryIcons={categoryIcons}
