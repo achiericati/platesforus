@@ -4,6 +4,8 @@ import DishesView from './routes/DishesView';
 import WeeklyMenu from './components/WeeklyMenu';
 import { WeeklyMenuType, SelezionePasti, Dish, Portata, DayMenu } from '../../electron/database/interfaces';
 import GenerateMenuModal from './components/GenerateMenuModal';
+import { randomInt } from 'crypto';
+import { getRandomInt } from './components/utils';
 
 const App: React.FC = () => {
   const [showManageDishes, setShowManageDishes] = useState(false);
@@ -50,13 +52,13 @@ const App: React.FC = () => {
           let piattiGenerati: string[] = [];
 
           if (tipiRichiesti.length === 0) {
-            const randomDish = tuttiIPiatti[Math.floor(Math.random() * tuttiIPiatti.length)];
+            const randomDish = tuttiIPiatti[getRandomInt(tuttiIPiatti.length)];
             piattiGenerati = [randomDish];
           } else {
             piattiGenerati = tipiRichiesti.map(tipo => {
               const lista = piattiPerTipo[tipo];
               if (lista.length === 0) return `${tipo} non disponibile`;
-              const index = Math.floor(Math.random() * lista.length);
+              const index = getRandomInt(lista.length);
               return lista[index];
             });
           }
