@@ -10,3 +10,9 @@ export const getDaysBetween = (start: string, end: string): string[] => {
   
     return days;
   };
+
+export const getRandomInt = (max: number) => {
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return array[0] % max;
+  };
