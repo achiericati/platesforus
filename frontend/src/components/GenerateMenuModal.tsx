@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from './Modal';
-import { SelezionePasti, Portata } from '../../../electron/database/interfaces';
+import { Portata } from '../../../electron/database/interfaces';
 import { getDaysBetween } from './utils';
+
+type PastoConNota = {
+  tipi: Portata[];
+  nota: string;
+};
+
+type SelezionePasti = {
+  [data: string]: {
+    pranzo: PastoConNota;
+    cena: PastoConNota;
+  };
+};
 
 interface GenerateMenuModalProps {
   isOpen: boolean;
@@ -14,7 +26,9 @@ interface GenerateMenuModalProps {
   setEndDate: (value: string) => void;
   selectedMeals: SelezionePasti;
   setSelectedMeals: (meals: SelezionePasti) => void;
-  onGenerate: () => void;
+  onGenerate: () => Promise<boolean>;
+  avoidDuplicates: boolean;
+  setAvoidDuplicates: (value: boolean) => void;
 }
 
 const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
@@ -28,8 +42,19 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
   setEndDate,
   selectedMeals,
   setSelectedMeals,
-  onGenerate
+  onGenerate,
+  avoidDuplicates,
+  setAvoidDuplicates
 }) => {
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleGenerate = async () => {
+    const success = await onGenerate();
+    if (!success) {
+      setErrorMessage('Errore: piatti insufficienti per generare il menu senza duplicazioni. Rivedi le selezioni.');
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={() => { onClose(); setStep(1); }} title="Genera Menu Settimanale">
       {step === 1 ? (
@@ -41,7 +66,7 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm"
               />
             </div>
             <div>
@@ -50,26 +75,27 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm"
               />
             </div>
           </div>
+
           <div className="flex justify-end gap-4 mt-4">
-            <button
-              onClick={onClose}
-              className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300"
-            >
+            <button onClick={onClose} className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">
               Annulla
             </button>
             <button
               disabled={!startDate || !endDate}
               onClick={() => {
                 const days = getDaysBetween(startDate, endDate);
-                const initialSelections: SelezionePasti = {};
+                const initial: SelezionePasti = {};
                 days.forEach(date => {
-                  initialSelections[date] = { pranzo: [], cena: [] };
+                  initial[date] = {
+                    pranzo: { tipi: [], nota: '' },
+                    cena: { tipi: [], nota: '' }
+                  };
                 });
-                setSelectedMeals(initialSelections);
+                setSelectedMeals(initial);
                 setStep(2);
               }}
               className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
@@ -80,61 +106,88 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
         </div>
       ) : (
         <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+          <p className="text-sm text-black-700 bg-purple-100 border border-purple-300 rounded px-3 py-2">
+            Per ogni pasto, seleziona una o più portate che verranno scelte in modo casuale.
+            Se non selezioni nessuna portata, il sistema sceglierà casualmente tra tutti i tipi di piatti.
+            Se aggiungi una nota, non verrà scelto nessun piatto per quel pasto, ma verrà mostrata la nota sul menu generato.
+          </p>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={avoidDuplicates}
+              onChange={(e) => setAvoidDuplicates(e.target.checked)}
+              id="avoidDupes"
+              className="accent-purple-600"
+            />
+            <label htmlFor="avoidDupes" className="text-sm text-gray-800">Evita duplicazioni</label>
+          </div>
+
           {Object.entries(selectedMeals).map(([date, pasti]) => (
             <div key={date} className="border-b pb-4">
               <h4 className="text-md font-bold text-gray-800 mb-2">
-                {new Date(date).toLocaleDateString('it-IT', {
-                  weekday: 'long',
-                  day: '2-digit',
-                  month: '2-digit'
-                })}
+                {new Date(date).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: '2-digit' })}
               </h4>
-              {['pranzo', 'cena'].map((mealKey) => (
-                <div key={mealKey} className="mb-2">
-                  <span className="block text-sm font-semibold text-gray-700 capitalize">{mealKey}</span>
-                  <div className="flex gap-2 mt-1">
-                    {['Primo', 'Secondo', 'Contorno'].map((portata) => {
-                      const selected = selectedMeals[date][mealKey as 'pranzo' | 'cena'].includes(portata as Portata);
-                      return (
-                        <button
-                          key={portata}
-                          className={`px-3 py-1 rounded-full border text-sm ${
-                            selected
-                              ? 'bg-purple-600 text-white border-purple-600'
-                              : 'bg-gray-100 text-gray-800 border-gray-300'
-                          }`}
-                          onClick={() => {
-                            const updated = { ...selectedMeals };
-                            const mealList = updated[date][mealKey as 'pranzo' | 'cena'];
-                            if (mealList.includes(portata as Portata)) {
-                              updated[date][mealKey as 'pranzo' | 'cena'] = mealList.filter(p => p !== portata);
-                            } else {
-                              mealList.push(portata as Portata);
-                            }
-                            setSelectedMeals({ ...updated });
-                          }}
-                        >
-                          {portata}
-                        </button>
-                      );
-                    })}
+              {['pranzo', 'cena'].map((mealKey) => {
+                const pasto = pasti[mealKey as 'pranzo' | 'cena'];
+                return (
+                  <div key={mealKey} className="mb-4">
+                    <span className="block text-sm font-semibold text-gray-700 capitalize mb-1">{mealKey}</span>
+                    <div className="flex gap-2 mb-2">
+                      {['Primo', 'Secondo', 'Contorno'].map((portata) => {
+                        const selected = pasto.tipi.includes(portata as Portata);
+                        return (
+                          <button
+                            key={portata}
+                            className={`px-3 py-1 rounded-full border text-sm ${
+                              selected
+                                ? 'bg-purple-600 text-white border-purple-600'
+                                : 'bg-gray-100 text-gray-800 border-gray-300'
+                            }`}
+                            onClick={() => {
+                              const updated = { ...selectedMeals };
+                              const lista = updated[date][mealKey as 'pranzo' | 'cena'].tipi;
+                              if (lista.includes(portata as Portata)) {
+                                updated[date][mealKey as 'pranzo' | 'cena'].tipi = lista.filter(p => p !== portata);
+                              } else {
+                                lista.push(portata as Portata);
+                              }
+                              setSelectedMeals(updated);
+                            }}
+                          >
+                            {portata}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Aggiungi una nota (opzionale)"
+                      value={pasto.nota}
+                      onChange={(e) => {
+                        const updated = { ...selectedMeals };
+                        updated[date][mealKey as 'pranzo' | 'cena'].nota = e.target.value;
+                        setSelectedMeals(updated);
+                      }}
+                      className="w-full rounded-md border border-gray-300 px-3 py-1 text-sm"
+                    />
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ))}
 
+          {errorMessage && (
+            <div className="text-red-600 text-sm border border-red-300 bg-red-100 rounded px-3 py-2">
+              {errorMessage}
+            </div>
+          )}
+
           <div className="flex justify-end gap-4 mt-6">
-            <button
-              onClick={() => setStep(1)}
-              className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300"
-            >
+            <button onClick={() => setStep(1)} className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">
               Indietro
             </button>
-            <button
-              onClick={onGenerate}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-            >
+            <button onClick={handleGenerate} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
               Genera Menu
             </button>
           </div>
