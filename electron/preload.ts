@@ -9,5 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateDish: (dish: Dish) => ipcRenderer.invoke('updateDish', dish),
   loadMenuFromDb: () => ipcRenderer.invoke('loadMenuFromDb'),
   saveMenuToDb: (menu: WeeklyMenuType) => ipcRenderer.invoke('saveMenuToDb', menu),
-  deleteMenuFromDb: () => ipcRenderer.invoke('deleteMenuFromDb')
+  deleteMenuFromDb: () => ipcRenderer.invoke('deleteMenuFromDb'),
+  exportDishesToCSV: (dishes: Dish[]) => ipcRenderer.invoke('exportDishesToCSV', dishes),
+  importDishesFromCSV: () => ipcRenderer.invoke('importDishesFromCSV')
 });

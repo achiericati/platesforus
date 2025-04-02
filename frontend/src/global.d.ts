@@ -11,6 +11,8 @@ declare global {
       loadMenuFromDb: () => Promise<WeeklyMenuType>;
       saveMenuToDb: (menu: WeeklyMenuType) => Promise<void>;
       deleteMenuFromDb: () => Promise<void>;
+      exportDishesToCSV: (dishes: Dish[]) => Promise<void>;
+      importDishesFromCSV: () => Promise<Dish[]>;
     };
   }
 }

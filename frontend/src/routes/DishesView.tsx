@@ -6,9 +6,9 @@ import { Dish } from '../../../electron/database/interfaces';
 import AddOrUpdateDishModal from '../components/AddOrUpdateDishModal';
 
 const DishesView = ({ onBackClick }: any) => {
-  const [dishes, setDishes] = useState<any[]>([]);
-  const [filteredDishes, setFilteredDishes] = useState<any[]>([]);
-  const [selectedDish, setSelectedDish] = useState<any>(null);
+  const [dishes, setDishes] = useState<Dish[]>([]);
+  const [filteredDishes, setFilteredDishes] = useState<Dish[]>([]);
+  const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
   const [showAddOrUpdateModal, setShowAddOrUpdateModal] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('All');
@@ -30,15 +30,13 @@ const DishesView = ({ onBackClick }: any) => {
     loadDishes();
   }, []);
 
-  const onDishClick = (dish: any) => setSelectedDish(dish);
+  const onDishClick = (dish: Dish) => setSelectedDish(dish);
 
   const saveOrUpdateDish = async (newDish: Dish, isEdit: boolean) => {
     if (isEdit) {
       try {
         await window.electronAPI.updateDish(newDish);
-        let updatedDishes = [...dishes]
-        updatedDishes = updatedDishes.filter(d => d.id !== newDish.id);
-        updatedDishes.push(newDish)
+        const updatedDishes = dishes.map(d => d.id === newDish.id ? newDish : d);
         setDishes(updatedDishes);
         applyFilters(categoryFilter, difficultyFilter, timeFilter, searchText, updatedDishes);
         setShowAddOrUpdateModal(false);
@@ -59,19 +57,15 @@ const DishesView = ({ onBackClick }: any) => {
     }
   };
 
-  const editDish = async (dish: any) => {
-    setShowAddOrUpdateModal(true);
-  };
+  const editDish = () => setShowAddOrUpdateModal(true);
 
   const deleteDish = async (dish: Dish) => {
     try {
       await window.electronAPI.deleteDish(dish.id);
-      let updatedDishes = [...dishes]
-      updatedDishes = updatedDishes.filter(d => d.id !== dish.id);
+      const updatedDishes = dishes.filter(d => d.id !== dish.id);
       setDishes(updatedDishes);
       applyFilters(categoryFilter, difficultyFilter, timeFilter, searchText, updatedDishes);
       closeModal();
-  
     } catch (error) {
       console.error('Errore durante l\'eliminazione del piatto:', error);
     }
@@ -104,7 +98,7 @@ const DishesView = ({ onBackClick }: any) => {
       const searchLower = searchValue.toLowerCase();
       filtered = filtered.filter(d =>
         d.name.toLowerCase().includes(searchLower) ||
-        d.description?.toLowerCase().includes(searchLower)
+        d.recipe?.toLowerCase().includes(searchLower)
       );
     }
 
@@ -135,12 +129,49 @@ const DishesView = ({ onBackClick }: any) => {
 
         <h3 className="text-xl font-semibold text-white text-center">Gestisci i tuoi piatti</h3>
 
-        <button
-          onClick={() => setShowAddOrUpdateModal(true)}
-          className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
-        >
-          Aggiungi Nuovo Piatto
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              try {
+                await window.electronAPI.exportDishesToCSV(dishes);
+              } catch (err) {
+                console.error('Errore esportazione CSV:', err);
+              }
+            }}
+            className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
+          >
+            Esporta CSV
+          </button>
+
+          <button
+            onClick={async () => {
+              try {
+                const imported = await window.electronAPI.importDishesFromCSV();
+                if (imported.length > 0) {
+                  const updatedDishes = [...dishes, ...imported];
+                  setDishes(updatedDishes);
+                  applyFilters(categoryFilter, difficultyFilter, timeFilter, searchText, updatedDishes);
+                  alert(`${imported.length} piatti importati con successo!`);
+                } else {
+                  alert('Nessun nuovo piatto importato.');
+                }
+              } catch (err) {
+                console.error('Errore durante l\'importazione del CSV:', err);
+                alert('Errore durante l\'importazione del file CSV.');
+              }
+            }}
+            className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
+          >
+            Importa CSV
+          </button>
+
+          <button
+            onClick={() => setShowAddOrUpdateModal(true)}
+            className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
+          >
+            Aggiungi Nuovo Piatto
+          </button>
+        </div>
       </div>
 
       <FiltersSection
@@ -192,7 +223,7 @@ const DishesView = ({ onBackClick }: any) => {
         <AddOrUpdateDishModal
           onClose={() => setShowAddOrUpdateModal(false)}
           onSave={saveOrUpdateDish}
-          dishToEdit={selectedDish}
+          dishToEdit={selectedDish ?? undefined}
         />
       )}
     </section>

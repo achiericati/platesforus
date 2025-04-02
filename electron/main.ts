@@ -1,7 +1,11 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import { setupDatabase } from './database/db';
+import { setupDatabase, getDb } from './database/db';
 import dataContext from './database/dataContext';
+import { Dish } from './database/interfaces';
+import { dialog } from 'electron';
+import fs from 'fs';
+import { parse } from 'csv-parse/sync';
 
 const IS_DEV = true
 
@@ -100,7 +104,66 @@ app.whenReady().then(async () => {
       throw error;
     }
   });
+
+  ipcMain.handle('exportDishesToCSV', async (event, dishes: Dish[]) => {
+    const { filePath } = await dialog.showSaveDialog({
+      title: 'Salva i piatti come CSV',
+      defaultPath: 'piatti.csv',
+      filters: [{ name: 'CSV', extensions: ['csv'] }]
+    });
   
+    if (!filePath) return;
+  
+    const header = 'Nome,Categoria,Difficoltà,Tempo Preparazione,Ricetta';
+    const rows = dishes.map(d =>
+      `"${d.name}","${d.category}","${d.difficulty}","${d.prepTime}","${(d.recipe || '').replace(/"/g, '""')}"`
+    );
+  
+    const csvContent = [header, ...rows].join('\n');
+  
+    fs.writeFileSync(filePath, csvContent, 'utf8');
+  });
+
+  ipcMain.handle('importDishesFromCSV', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      title: 'Importa CSV di piatti',
+      filters: [{ name: 'CSV', extensions: ['csv'] }],
+      properties: ['openFile']
+    });
+  
+    if (canceled || filePaths.length === 0) return [];
+
+    const db = getDb();
+  
+    const content = fs.readFileSync(filePaths[0], 'utf8');
+    const records = parse(content, {
+      columns: true,
+      skip_empty_lines: true
+    });
+  
+    const existing = await db.all('SELECT name FROM dish');
+    const existingNames = new Set(existing.map((r: any) => r.name.trim().toLowerCase()));
+  
+    const newDishes = records
+      .filter((r: any) => r['Nome'] && !existingNames.has(r['Nome'].trim().toLowerCase()))
+      .map((r: any) => ({
+        name: r['Nome'],
+        category: r['Categoria'],
+        difficulty: r['Difficoltà'],
+        prepTime: parseInt(r['Tempo Preparazione']) || 0,
+        recipe: r['Ricetta'] || ''
+      }));
+  
+    const stmt = await db.prepare('INSERT INTO dish (name, category, difficulty, prepTime, recipe) VALUES (?, ?, ?, ?, ?)');
+    for (const dish of newDishes) {
+      await stmt.run(dish.name, dish.category, dish.difficulty, dish.prepTime, dish.recipe);
+    }
+    await stmt.finalize();
+
+    dataContext.invalidateDishesCache();
+  
+    return newDishes;
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
