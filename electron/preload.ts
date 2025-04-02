@@ -11,5 +11,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveMenuToDb: (menu: WeeklyMenuType) => ipcRenderer.invoke('saveMenuToDb', menu),
   deleteMenuFromDb: () => ipcRenderer.invoke('deleteMenuFromDb'),
   exportDishesToCSV: (dishes: Dish[]) => ipcRenderer.invoke('exportDishesToCSV', dishes),
-  importDishesFromCSV: () => ipcRenderer.invoke('importDishesFromCSV')
+  importDishesFromCSV: () => ipcRenderer.invoke('importDishesFromCSV'),
+  askSaveFile: (options: any) => ipcRenderer.invoke('askSaveFile', options),
+  saveBufferToFile: (filePath: string, buffer: Buffer) => ipcRenderer.invoke('saveBufferToFile', filePath, buffer),
+  saveImage: (buffer: Buffer) => ipcRenderer.invoke('saveImage', buffer)
 });

@@ -165,6 +165,33 @@ app.whenReady().then(async () => {
     return newDishes;
   });
 
+  ipcMain.handle('askSaveFile', async (_, options) => {
+    const { filePath, canceled } = await dialog.showSaveDialog(options);
+    return canceled ? undefined : filePath;
+  });
+  
+  ipcMain.handle('saveBufferToFile', async (_, filePath: string, buffer: Buffer) => {
+    await fs.promises.writeFile(filePath, buffer);
+  });
+
+  ipcMain.handle('saveImage', async (_event, buffer: Buffer) => {
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'Esporta menu come immagine',
+      defaultPath: 'menu-settimanale.png',
+      filters: [{ name: 'PNG Image', extensions: ['png'] }]
+    });
+  
+    if (canceled || !filePath) return false;
+  
+    try {
+      fs.writeFileSync(filePath, buffer);
+      return true;
+    } catch (error) {
+      console.error('Errore nel salvataggio immagine:', error);
+      return false;
+    }
+  });  
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });

@@ -13,6 +13,9 @@ declare global {
       deleteMenuFromDb: () => Promise<void>;
       exportDishesToCSV: (dishes: Dish[]) => Promise<void>;
       importDishesFromCSV: () => Promise<Dish[]>;
+      askSaveFile: () => Promise<string|undefined>;
+      saveBufferToFile: () => Promise<void>;
+      saveImage: (buffer: Buffer) => Promise<boolean>;
     };
   }
 }
