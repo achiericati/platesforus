@@ -2,7 +2,7 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 import { app } from 'electron';
 import { open, Database } from 'sqlite'; // usa l'interfaccia async di sqlite
-import { Dish } from './interfaces';
+import { Dish, WeeklyMenuType } from './interfaces';
 
 sqlite3.verbose();
 
@@ -25,6 +25,13 @@ export const setupDatabase = async () => {
       difficulty VARCHAR(45),
       prepTime INTEGER,
       recipe TEXT
+    )
+  `);
+
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS menu (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      data TEXT NOT NULL
     )
   `);
 
@@ -90,6 +97,32 @@ export const updateDish = async (updatedDish: Dish) => {
 
 export const deleteDish = async (id: number) => {
   await db.run('DELETE FROM dish WHERE id = ?', [id]);
+};
+
+export const loadMenuFromDb = async (): Promise<WeeklyMenuType | null> => {
+  const row = await db.get('SELECT data FROM menu WHERE id = 1');
+  if (!row) return null;
+
+  try {
+    return JSON.parse(row.data);
+  } catch (error) {
+    console.error('Errore nel parsing del menu dal DB:', error);
+    return null;
+  }
+};
+
+export const saveMenuToDb = async (menu: WeeklyMenuType) => {
+  const jsonData = JSON.stringify(menu);
+
+  await db.run(`
+    INSERT INTO menu (id, data) 
+    VALUES (1, ?)
+    ON CONFLICT(id) DO UPDATE SET data = excluded.data
+  `, jsonData);
+};
+
+export const deleteMenuFromDb = async () => {
+  await db.run('DELETE FROM menu WHERE id = 1');
 };
 
 export const getDb = () => db;

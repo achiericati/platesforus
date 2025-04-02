@@ -1,9 +1,51 @@
-import { Dish } from "./interfaces";
-import { fetchAllDishesFromDb, deleteDish, addDish, updateDish } from './db';
+import { Dish, WeeklyMenuType } from "./interfaces";
+import { fetchAllDishesFromDb, deleteDish, addDish, updateDish, loadMenuFromDb, saveMenuToDb, deleteMenuFromDb } from './db';
 
 
 class DataContext {
   private dishesCache: Dish[] | null = null;
+  private menu: WeeklyMenuType | null = null;
+
+  public async loadMenuFromDb(): Promise<WeeklyMenuType | null> {
+    if (this.menu) {
+      return this.menu;
+    }
+
+    try {
+      const menu = await loadMenuFromDb();
+      this.menu = menu;
+      return menu;
+    } catch (error) {
+      console.error('error during menu loading:', error);
+      throw error;
+    }
+  }
+
+  public async saveMenuToDb(menu: WeeklyMenuType): Promise<void> {
+    if (this.menu) {
+      this.menu = null;
+    }
+
+    try {
+      await saveMenuToDb(menu);
+      this.menu = menu;
+      return;
+    } catch (error) {
+      console.error('error during menu editing/creating:', error);
+      throw error;
+    }
+  }
+
+  public async deleteMenuFromDb(): Promise<void> {
+    try {
+      await deleteMenuFromDb();
+      this.menu = null;
+      return;
+    } catch (error) {
+      console.error('error during menu editing/creating:', error);
+      throw error;
+    }
+  }
 
   public async getAllDishes(): Promise<Dish[]> {
     if (this.dishesCache) {

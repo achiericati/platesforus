@@ -70,6 +70,36 @@ app.whenReady().then(async () => {
       throw error;
     }
   });
+
+  ipcMain.handle('loadMenuFromDb', async (event) => {
+    try {
+      const menu = await dataContext.loadMenuFromDb();
+      return menu;
+    } catch (error) {
+      console.error('Errore durante la get del menu:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('saveMenuToDb', async (event, menu) => {
+    try {
+      await dataContext.saveMenuToDb(menu);
+      return;
+    } catch (error) {
+      console.error('Errore durante la modifica del menu:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('deleteMenuFromDb', async (event) => {
+    try {
+      await dataContext.deleteMenuFromDb();
+      return;
+    } catch (error) {
+      console.error('Errore durante la eliminazione del menu:', error);
+      throw error;
+    }
+  });
   
 
   app.on('activate', () => {

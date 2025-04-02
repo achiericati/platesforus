@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 import DishesView from './routes/DishesView';
 import WeeklyMenu from './components/WeeklyMenu';
 import GenerateMenuModal from './components/GenerateMenuModal';
+import EditMenuModal from './components/EditMenuModal';
+import ConfirmModal from './components/ConfirmModal';
 import { getRandomInt } from './components/utils';
 import { Dish, WeeklyMenuType, DayMenu, Portata } from '../../electron/database/interfaces';
+import { deleteMenuFromDb } from '../../electron/database/db';
 
 type PastoConNota = {
   tipi: Portata[];
@@ -22,6 +25,8 @@ const App: React.FC = () => {
   const [showManageDishes, setShowManageDishes] = useState(false);
   const [weeklyMenu, setWeeklyMenu] = useState<WeeklyMenuType | null>(null);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [step, setStep] = useState<1 | 2>(1);
@@ -32,10 +37,21 @@ const App: React.FC = () => {
     const today = new Date();
     const inSevenDays = new Date();
     inSevenDays.setDate(today.getDate() + 7);
-
     setStartDate(today.toISOString().split('T')[0]);
     setEndDate(inSevenDays.toISOString().split('T')[0]);
+
+    const loadMenu = async () => {
+      try {
+        const menuFromDb = await window.electronAPI.loadMenuFromDb();
+        if (menuFromDb) setWeeklyMenu(menuFromDb);
+      } catch (error) {
+        console.error('Errore nel caricamento dei piatti:', error);
+      }
+    };
+
+    loadMenu();
   }, []);
+  
 
   const handleManageDishesClick = () => setShowManageDishes(true);
   const handleBackClick = () => setShowManageDishes(false);
@@ -106,6 +122,7 @@ const App: React.FC = () => {
       }
 
       setWeeklyMenu(nuovoMenu);
+      await window.electronAPI.saveMenuToDb(nuovoMenu);
       setShowGenerateModal(false);
       setStep(1);
       return true;
@@ -113,6 +130,16 @@ const App: React.FC = () => {
       console.error('Errore nel generare il menu:', error);
       return false;
     }
+  };
+
+  const aggiornaMenu = async (menuAggiornato: WeeklyMenuType) => {
+    setWeeklyMenu(menuAggiornato);
+    await window.electronAPI.saveMenuToDb(menuAggiornato);
+    setShowEditModal(false);
+  };
+
+  const deleteMenu = async () => {
+    await window.electronAPI.deleteMenuFromDb();
   };
 
   return (
@@ -135,7 +162,11 @@ const App: React.FC = () => {
         {showManageDishes ? (
           <DishesView onBackClick={handleBackClick} />
         ) : weeklyMenu ? (
-          <WeeklyMenu menu={weeklyMenu} />
+          <WeeklyMenu
+            menu={weeklyMenu}
+            onEdit={() => setShowEditModal(true)}
+            onDelete={() => setShowConfirmDelete(true)}
+          />
         ) : (
           <div className="flex flex-col justify-center items-center text-center px-6 py-12">
             <motion.h2
@@ -184,6 +215,26 @@ const App: React.FC = () => {
         onGenerate={generaMenuCasuale}
         avoidDuplicates={avoidDuplicates}
         setAvoidDuplicates={setAvoidDuplicates}
+      />
+
+      {weeklyMenu && (
+        <EditMenuModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          menu={weeklyMenu}
+          onSave={aggiornaMenu}
+        />
+      )}
+
+      <ConfirmModal
+        isOpen={showConfirmDelete}
+        message="Sei sicuro di voler eliminare il menu? Questa azione non è reversibile."
+        onCancel={() => setShowConfirmDelete(false)}
+        onConfirm={() => {
+          setWeeklyMenu(null);
+          setShowConfirmDelete(false);
+          deleteMenu();
+        }}
       />
     </div>
   );

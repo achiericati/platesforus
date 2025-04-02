@@ -8,6 +8,9 @@ declare global {
       deleteDish: (id: number) => Promise<void>;
       addDish: (dish: Dish) => Promise<Dish>;
       updateDish: (dish: Dish) => Promise<void>;
+      loadMenuFromDb: () => Promise<WeeklyMenuType>;
+      saveMenuToDb: (menu: WeeklyMenuType) => Promise<void>;
+      deleteMenuFromDb: () => Promise<void>;
     };
   }
 }

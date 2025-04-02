@@ -1,6 +1,6 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { WeeklyMenuType } from '../../../electron/database/interfaces';
-import React from 'react';
 
 const gradients = [
   'from-pink-400 to-purple-500',
@@ -16,19 +16,42 @@ const icons = ['🍝', '🍲', '🍕', '🍔', '🥗', '🍛', '🥘'];
 
 interface WeeklyMenuProps {
   menu: WeeklyMenuType;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-const WeeklyMenu: React.FC<WeeklyMenuProps> = ({ menu }) => {
+const WeeklyMenu: React.FC<WeeklyMenuProps> = ({ menu, onEdit, onDelete }) => {
   return (
     <div className="flex flex-col px-4 py-8 space-y-8">
       <motion.h2
-        className="text-4xl font-bold text-center mb-6"
+        className="text-4xl font-bold text-center mb-2"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         Il tuo Menu Settimanale
       </motion.h2>
 
+      {/* BOTTONI IN ALTO */}
+      <div className="flex justify-center gap-4">
+        <motion.button
+          className="bg-white text-purple-600 font-semibold px-4 py-2 text-sm rounded-lg shadow hover:bg-gray-200 transition"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onEdit}
+        >
+          Modifica Menu
+        </motion.button>
+        <motion.button
+          className="bg-white text-red-600 font-semibold px-4 py-2 text-sm rounded-lg shadow hover:bg-gray-200 transition"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onDelete}
+        >
+          Elimina Menu
+        </motion.button>
+      </div>
+
+      {/* CARD GIORNI */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {Object.entries(menu).map(([giorno, pasti], index) => (
           <motion.div
@@ -43,7 +66,6 @@ const WeeklyMenu: React.FC<WeeklyMenuProps> = ({ menu }) => {
                 {icons[index % icons.length]} {giorno.charAt(0).toUpperCase() + giorno.slice(1)}
               </h3>
             </div>
-
             <div className="flex justify-between py-2 border-b border-white/30">
               <span className="font-medium text-white">Pranzo:</span>
               <span className="text-white">{pasti.pranzo}</span>
