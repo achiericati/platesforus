@@ -119,7 +119,7 @@ const DishesView = ({ onBackClick }: any) => {
 
   return (
     <section className="flex flex-col flex-grow w-full overflow-hidden">
-      <div className="flex items-center justify-between w-full px-5 py-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 mb-4">
+    <div className="flex items-center justify-between w-full px-5 py-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 mb-4 relative">
         <button
           onClick={onBackClick}
           className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
@@ -127,7 +127,9 @@ const DishesView = ({ onBackClick }: any) => {
           ← Indietro
         </button>
 
-        <h3 className="text-xl font-semibold text-white text-center">Gestisci i tuoi piatti</h3>
+        <h3 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-semibold text-white">
+          Gestisci i tuoi piatti
+        </h3>
 
         <div className="flex gap-2">
           <button

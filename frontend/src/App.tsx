@@ -153,7 +153,7 @@ const App: React.FC = () => {
             whileTap={{ scale: 0.95 }}
             onClick={handleManageDishesClick}
           >
-            Gestisci Piatti
+            Gestisci i tuoi piatti
           </motion.button>
         </header>
       )}

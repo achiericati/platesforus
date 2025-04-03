@@ -79,7 +79,7 @@ const WeeklyMenu: React.FC<WeeklyMenuProps> = ({ menu, onEdit, onDelete }) => {
           whileTap={{ scale: 0.95 }}
           onClick={handleExportImage}
         >
-          Esporta come Immagine
+          Esporta Immagine
         </motion.button>
       </div>
 
