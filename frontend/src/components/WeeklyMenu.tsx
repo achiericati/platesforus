@@ -89,7 +89,7 @@ const WeeklyMenu: React.FC<WeeklyMenuProps> = ({ menu, onEdit, onDelete }) => {
       {/* Sezione scrollabile con le card */}
       <div
         ref={cardsRef}
-        className="flex-1 overflow-y-auto mt-8 pr-2"
+        className="flex-1 overflow-y-auto mt-16 pr-2"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-4">
           {Object.entries(menu).map(([giorno, pasti], index) => (

@@ -106,11 +106,13 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
         </div>
       ) : (
         <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
-          <p className="text-sm text-black-700 bg-purple-100 border border-purple-300 rounded px-3 py-2">
-            Per ogni pasto, seleziona una o più portate che verranno scelte in modo casuale.
-            Se non selezioni nessuna portata, il sistema sceglierà casualmente tra tutti i tipi di piatti.
-            Se aggiungi una nota, non verrà scelto nessun piatto per quel pasto, ma verrà mostrata la nota sul menu generato.
-          </p>
+          <div className="text-sm text-black-700 bg-white-100 border border-purple-300 rounded px-3 py-2 space-y-2">
+            <p>Per ogni pasto, seleziona una o più portate che verranno scelte in modo casuale.</p>
+            <p>Se non selezioni nessuna portata, il sistema sceglierà casualmente tra tutti i tipi di piatti (dolci esclusi).</p>
+            <p>Se aggiungi una nota, non verrà scelto nessun piatto per quel pasto, ma verrà mostrata la tua nota sul menu generato (ad esempio, "Cena fuori").</p>
+            <p>Il check box "Evita duplicazioni", se abilitato fa in modo che non possa replicarsi lo stesso piatto piu di una volta nel menu.</p>
+
+          </div>
 
           <div className="flex items-center gap-2">
             <input
