@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { Portata } from '../../../electron/database/interfaces';
 import { getDaysBetween } from './utils';
@@ -29,6 +29,8 @@ interface GenerateMenuModalProps {
   onGenerate: () => Promise<boolean>;
   avoidDuplicates: boolean;
   setAvoidDuplicates: (value: boolean) => void;
+  forcedDishes: string[];
+  setForcedDishes: (dishes: string[]) => void;
 }
 
 const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
@@ -44,15 +46,38 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
   setSelectedMeals,
   onGenerate,
   avoidDuplicates,
-  setAvoidDuplicates
+  setAvoidDuplicates,
+  forcedDishes,
+  setForcedDishes
 }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [showInstructions, setShowInstructions] = useState(false);
+  const [search, setSearch] = useState('');
+  const [allDishes, setAllDishes] = useState<string[]>([]);
+
+  useEffect(() => {
+    window.electronAPI.getAllDishes().then(dishes => {
+      setAllDishes(dishes.map(d => d.name));
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      const today = new Date();
+      const inSevenDays = new Date();
+      inSevenDays.setDate(today.getDate() + 7);
+      setStartDate(today.toISOString().split('T')[0]);
+      setEndDate(inSevenDays.toISOString().split('T')[0]);
+      setForcedDishes([]);
+      setShowInstructions(false);
+      setErrorMessage('');
+    }
+  }, [isOpen]);
 
   const handleGenerate = async () => {
     const success = await onGenerate();
     if (!success) {
-      setErrorMessage('Errore: piatti insufficienti per generare il menu senza duplicazioni. Rivedi le selezioni.');
+      setErrorMessage('Errore: impossibile generare il menu. Verifica i piatti obbligatori o le impostazioni.');
     }
   };
 
@@ -107,7 +132,6 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
         </div>
       ) : (
         <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
-          {/* Box istruzioni espandibile */}
           <div
             className="bg-purple-100 border border-purple-300 rounded px-3 py-2 text-sm cursor-pointer"
             onClick={() => setShowInstructions(!showInstructions)}
@@ -121,10 +145,44 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
               <div className="mt-3 space-y-2 text-black">
                 <p>Per ogni pasto, seleziona una o più portate che verranno scelte in modo casuale.</p>
                 <p>Se non selezioni nessuna portata, il sistema sceglierà casualmente tra tutti i tipi di piatti (dolci esclusi).</p>
-                <p>Se aggiungi una nota, non verrà scelto nessun piatto per quel pasto, ma verrà mostrata la tua nota sul menu generato (ad esempio, "Cena fuori").</p>
-                <p>Il checkbox "Evita duplicazioni", se abilitato, fa in modo che non possa replicarsi lo stesso piatto più di una volta nel menu.</p>
+                <p>Se aggiungi una nota al pasto, non verrà scelto nessun piatto, ma verrà mostrata la tua nota per quel pasto sul menu generato.</p>
+                <p>Hai inoltre la possibilità di aggiungere dei "Piatti obbligatori", che dovranno essere per forza inseriti nel menu; questo perchè magari hai già acquistato gli ingredienti.</p>
+                <p>Il checkbox "Evita duplicazioni" impedisce che lo stesso piatto venga ripetuto più volte.</p>
               </div>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Piatti obbligatori</label>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cerca un piatto"
+              className="w-full rounded-md border border-gray-300 px-3 py-1 text-sm"
+            />
+            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto border p-2 rounded">
+              {[...forcedDishes, ...allDishes.filter(n => !forcedDishes.includes(n))]
+                .filter(name => name.toLowerCase().includes(search.toLowerCase()))
+                .map(name => (
+                  <button
+                    key={name}
+                    onClick={() => {
+                      const nuovi = forcedDishes.includes(name)
+                        ? forcedDishes.filter(n => n !== name)
+                        : [...forcedDishes, name];
+                      setForcedDishes(nuovi);
+                    }}
+                    className={`text-sm px-2 py-1 rounded-full border ${
+                      forcedDishes.includes(name)
+                        ? 'bg-purple-600 text-white border-purple-600'
+                        : 'bg-gray-100 text-gray-800 border-gray-300'
+                    }`}
+                  >
+                    {name}
+                  </button>
+                ))}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">

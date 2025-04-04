@@ -32,6 +32,7 @@ const App: React.FC = () => {
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedMeals, setSelectedMeals] = useState<SelezionePasti>({});
   const [avoidDuplicates, setAvoidDuplicates] = useState(true);
+  const [forcedDishes, setForcedDishes] = useState<string[]>([]);
 
   useEffect(() => {
     const today = new Date();
@@ -51,7 +52,6 @@ const App: React.FC = () => {
 
     loadMenu();
   }, []);
-  
 
   const handleManageDishesClick = () => setShowManageDishes(true);
   const handleBackClick = () => setShowManageDishes(false);
@@ -66,14 +66,19 @@ const App: React.FC = () => {
         Contorno: []
       };
 
+      const piattoCategoriaMap: Record<string, Portata | null> = {};
+
       dishes.forEach(dish => {
         const tipo = dish.category as Portata;
         if (piattiPerTipo[tipo]) piattiPerTipo[tipo].push(dish.name);
+        piattoCategoriaMap[dish.name] = tipo;
       });
 
       const tuttiIPiatti = dishes.map(d => d.name);
       const piattiUsati = new Set<string>();
       const nuovoMenu: WeeklyMenuType = {};
+      const forcedQueue = [...forcedDishes];
+      const forcedLeftovers: string[] = [];
 
       for (const [data, pasti] of Object.entries(selectedMeals)) {
         const giorno = new Date(data);
@@ -90,35 +95,58 @@ const App: React.FC = () => {
 
           if (selezione.nota.trim()) {
             menuGiorno[momento as 'pranzo' | 'cena'] = selezione.nota.trim();
-          } else {
-            const tipiRichiesti = selezione.tipi;
-            let piattiGenerati: string[] = [];
-
-            const getRandomFromList = (lista: string[]) => {
-              const filtrati = avoidDuplicates ? lista.filter(p => !piattiUsati.has(p)) : lista;
-              if (filtrati.length === 0) return null;
-              const p = filtrati[getRandomInt(filtrati.length)];
-              if (avoidDuplicates) piattiUsati.add(p);
-              return p;
-            };
-
-            if (tipiRichiesti.length === 0) {
-              const piatto = getRandomFromList(tuttiIPiatti);
-              if (!piatto) return false;
-              piattiGenerati = [piatto];
-            } else {
-              for (const tipo of tipiRichiesti) {
-                const piatto = getRandomFromList(piattiPerTipo[tipo]);
-                if (!piatto) return false;
-                piattiGenerati.push(piatto);
-              }
-            }
-
-            menuGiorno[momento as 'pranzo' | 'cena'] = piattiGenerati.join(' + ');
+            continue;
           }
+
+          let forzatoInserito = false;
+
+          for (let i = 0; i < forcedQueue.length; i++) {
+            const nomePiatto = forcedQueue[i];
+            const categoria = piattoCategoriaMap[nomePiatto];
+            if (!categoria) continue;
+
+            if (selezione.tipi.length === 0 || selezione.tipi.includes(categoria)) {
+              menuGiorno[momento as 'pranzo' | 'cena'] = nomePiatto;
+              if (avoidDuplicates) piattiUsati.add(nomePiatto);
+              forcedQueue.splice(i, 1);
+              forzatoInserito = true;
+              break;
+            }
+          }
+
+          if (forzatoInserito) continue;
+
+          const tipiRichiesti = selezione.tipi;
+          let piattiGenerati: string[] = [];
+
+          const getRandomFromList = (lista: string[]) => {
+            const filtrati = avoidDuplicates ? lista.filter(p => !piattiUsati.has(p)) : lista;
+            if (filtrati.length === 0) return null;
+            const p = filtrati[getRandomInt(filtrati.length)];
+            if (avoidDuplicates) piattiUsati.add(p);
+            return p;
+          };
+
+          if (tipiRichiesti.length === 0) {
+            const piatto = getRandomFromList(tuttiIPiatti);
+            if (!piatto) return false;
+            piattiGenerati = [piatto];
+          } else {
+            for (const tipo of tipiRichiesti) {
+              const piatto = getRandomFromList(piattiPerTipo[tipo]);
+              if (!piatto) return false;
+              piattiGenerati.push(piatto);
+            }
+          }
+
+          menuGiorno[momento as 'pranzo' | 'cena'] = piattiGenerati.join(' + ');
         }
 
         nuovoMenu[giornoLabel] = menuGiorno;
+      }
+
+      if (forcedQueue.length > 0) {
+        return false;
       }
 
       setWeeklyMenu(nuovoMenu);
@@ -140,6 +168,12 @@ const App: React.FC = () => {
 
   const deleteMenu = async () => {
     await window.electronAPI.deleteMenuFromDb();
+  };
+
+  const apriModaleGenerazione = () => {
+    setForcedDishes([]);
+    setStep(1);
+    setShowGenerateModal(true);
   };
 
   return (
@@ -189,7 +223,7 @@ const App: React.FC = () => {
               className="bg-white text-purple-600 text-lg font-bold px-8 py-3 rounded-full shadow-lg hover:bg-gray-100 transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowGenerateModal(true)}
+              onClick={apriModaleGenerazione}
             >
               Genera Menu Settimanale
             </motion.button>
@@ -215,6 +249,8 @@ const App: React.FC = () => {
         onGenerate={generaMenuCasuale}
         avoidDuplicates={avoidDuplicates}
         setAvoidDuplicates={setAvoidDuplicates}
+        forcedDishes={forcedDishes}
+        setForcedDishes={setForcedDishes}
       />
 
       {weeklyMenu && (
