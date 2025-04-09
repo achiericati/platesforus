@@ -52,6 +52,7 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
 }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showForcedDishes, setShowForcedDishes] = useState(false);
   const [search, setSearch] = useState('');
   const [allDishes, setAllDishes] = useState<string[]>([]);
 
@@ -70,6 +71,7 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
       setEndDate(inSevenDays.toISOString().split('T')[0]);
       setForcedDishes([]);
       setShowInstructions(false);
+      setShowForcedDishes(false);
       setErrorMessage('');
     }
   }, [isOpen]);
@@ -132,8 +134,9 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
         </div>
       ) : (
         <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+          {/* Istruzioni espandibili */}
           <div
-            className="bg-purple-100 border border-purple-300 rounded px-3 py-2 text-sm cursor-pointer"
+            className="bg-white-100 border border-purple-300 rounded px-3 py-2 text-sm cursor-pointer"
             onClick={() => setShowInstructions(!showInstructions)}
           >
             <div className="flex items-center gap-2 text-purple-800 font-semibold">
@@ -152,39 +155,52 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
             )}
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Piatti obbligatori</label>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cerca un piatto"
-              className="w-full rounded-md border border-gray-300 px-3 py-1 text-sm"
-            />
-            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto border p-2 rounded">
-              {[...forcedDishes, ...allDishes.filter(n => !forcedDishes.includes(n))]
-                .filter(name => name.toLowerCase().includes(search.toLowerCase()))
-                .map(name => (
-                  <button
-                    key={name}
-                    onClick={() => {
-                      const nuovi = forcedDishes.includes(name)
-                        ? forcedDishes.filter(n => n !== name)
-                        : [...forcedDishes, name];
-                      setForcedDishes(nuovi);
-                    }}
-                    className={`text-sm px-2 py-1 rounded-full border ${
-                      forcedDishes.includes(name)
-                        ? 'bg-purple-600 text-white border-purple-600'
-                        : 'bg-gray-100 text-gray-800 border-gray-300'
-                    }`}
-                  >
-                    {name}
-                  </button>
-                ))}
+          {/* Piatti obbligatori espandibili */}
+          <div
+            className="bg-white-100 border border-purple-300 rounded px-3 py-2 text-sm cursor-pointer"
+            onClick={() => setShowForcedDishes(!showForcedDishes)}
+          >
+            <div className="flex items-center gap-2 text-purple-800 font-semibold">
+              <span>📌</span>
+              <span>Piatti obbligatori</span>
+              <span>{showForcedDishes ? '▲' : '▼'}</span>
             </div>
+            {showForcedDishes && (
+              <div className="mt-3 space-y-2">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Cerca un piatto"
+                  className="w-full rounded-md border border-gray-300 px-3 py-1 text-sm"
+                />
+                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto border p-2 rounded bg-white">
+                  {[...forcedDishes, ...allDishes.filter(n => !forcedDishes.includes(n))]
+                    .filter(name => name.toLowerCase().includes(search.toLowerCase()))
+                    .map(name => (
+                      <button
+                        key={name}
+                        onClick={() => {
+                          const nuovi = forcedDishes.includes(name)
+                            ? forcedDishes.filter(n => n !== name)
+                            : [...forcedDishes, name];
+                          setForcedDishes(nuovi);
+                        }}
+                        className={`text-sm px-2 py-1 rounded-full border ${
+                          forcedDishes.includes(name)
+                            ? 'bg-purple-600 text-white border-purple-600'
+                            : 'bg-gray-100 text-gray-800 border-gray-300'
+                        }`}
+                      >
+                        {name}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
 
+          {/* Checkbox evita duplicazioni */}
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -196,6 +212,7 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
             <label htmlFor="avoidDupes" className="text-sm text-gray-800">Evita duplicazioni</label>
           </div>
 
+          {/* Selezione pasti giornalieri */}
           {Object.entries(selectedMeals).map(([date, pasti]) => (
             <div key={date} className="border-b pb-4">
               <h4 className="text-md font-bold text-gray-800 mb-2">

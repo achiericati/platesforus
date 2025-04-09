@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
     "dev:react": "webpack serve --mode development --open",
-    "dev:electron": "wait-on http://localhost:5173 --timeout 30000 && tsc -p electron && electron ./dist/main.js",
+    "dev:electron": "wait-on http://localhost:5173 --timeout 100000 && tsc -p electron && electron ./dist/main.js",
     "dev:web": "webpack serve --mode development --open",
     "build": "webpack --mode production && electron-builder"
   },
