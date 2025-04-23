@@ -7,7 +7,7 @@ import { dialog } from 'electron';
 import fs from 'fs';
 import { parse } from 'csv-parse/sync';
 
-const IS_DEV = true;
+const IS_DEV = false;
 
 let win: BrowserWindow;
 

@@ -2,13 +2,13 @@
   "name": "plates-for-us",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/bundle.js",
+  "main": "dist/main.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
     "dev:react": "webpack serve --mode development --open",
     "dev:electron": "wait-on http://localhost:5173 --timeout 100000 && tsc -p electron && electron ./dist/main.js",
     "dev:web": "webpack serve --mode development --open",
-    "build": "webpack --mode production && electron-builder"
+    "build": "webpack --mode production && tsc -p electron && electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -52,12 +52,24 @@
   },
   "build": {
     "appId": "com.platesforus.app",
+    "productName": "Plates For Us",
     "files": [
       "dist/**/*",
       "!**/*.map"
     ],
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "win": {
+      "icon": "icon.ico",
+      "target": "nsis"
+    },
+    "mac": {
+      "icon": "icon.icns"
+    },
+    "linux": {
+      "icon": "icon.png"
     }
   }
 }
