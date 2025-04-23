@@ -5,6 +5,7 @@ export interface Dish {
   difficulty: string;
   prepTime: number;
   recipe: string;
+  isSpecial: boolean;
 }
 
 export type Meal = string;

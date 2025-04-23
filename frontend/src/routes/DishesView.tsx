@@ -150,9 +150,9 @@ const DishesView = ({ onBackClick }: any) => {
               try {
                 const imported = await window.electronAPI.importDishesFromCSV();
                 if (imported.length > 0) {
-                  const updatedDishes = [...dishes, ...imported];
-                  setDishes(updatedDishes);
-                  applyFilters(categoryFilter, difficultyFilter, timeFilter, searchText, updatedDishes);
+                  const refreshedDishes = await window.electronAPI.getAllDishes();
+                  setDishes(refreshedDishes);
+                  applyFilters(categoryFilter, difficultyFilter, timeFilter, searchText, refreshedDishes);
                   alert(`${imported.length} piatti importati con successo!`);
                 } else {
                   alert('Nessun nuovo piatto importato.');

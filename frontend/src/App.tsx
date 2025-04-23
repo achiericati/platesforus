@@ -58,7 +58,13 @@ const App: React.FC = () => {
 
   const generaMenuCasuale = async (): Promise<boolean> => {
     try {
-      const dishes: Dish[] = await window.electronAPI.getAllDishes();
+      const allDishes: Dish[] = await window.electronAPI.getAllDishes();
+      const dishes = allDishes.filter(d => !d.isSpecial);
+
+      if (dishes.length === 0) {
+        alert('Non ci sono piatti disponibili per generare il menu (escludendo i piatti speciali).');
+        return false;
+      }
 
       const piattiPerTipo: Record<Portata, string[]> = {
         Primo: [],

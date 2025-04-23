@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Dish } from '../../../electron/database/interfaces';
+import { FaStar } from 'react-icons/fa';
 
 interface DishModalProps {
   dish: Dish;
@@ -9,7 +10,7 @@ interface DishModalProps {
 }
 
 const DishModal: React.FC<DishModalProps> = ({ dish, onClose, onEditDish, onDeleteDish }) => {
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false); // Stato per mostrare il prompt
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   if (!dish) return null;
 
@@ -38,7 +39,15 @@ const DishModal: React.FC<DishModalProps> = ({ dish, onClose, onEditDish, onDele
         flexDirection: 'column',
         boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
       }}>
-        <h4 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>{dish.name}</h4>
+        <h4 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.5rem' }}>{dish.name}</h4>
+
+        {Boolean(dish.isSpecial) && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+            <FaStar style={{ color: 'gold' }} />
+            <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#a16207' }}>Piatto speciale</span>
+          </div>
+        )}
+
         <p style={{ marginBottom: '0.5rem' }}><strong>Categoria:</strong> {dish.category}</p>
         <p style={{ marginBottom: '0.5rem' }}><strong>Difficoltà:</strong> {dish.difficulty}</p>
         <p style={{ marginBottom: '0.5rem' }}><strong>Tempo di preparazione:</strong> {dish.prepTime} min</p>
@@ -53,7 +62,6 @@ const DishModal: React.FC<DishModalProps> = ({ dish, onClose, onEditDish, onDele
           <p style={{ marginTop: '0.5rem' }}>{dish.recipe || 'Nessuna ricetta disponibile'}</p>
         </div>
 
-        {/* Se l'utente ha cliccato su "Elimina", mostra il prompt di conferma */}
         {showConfirmDelete ? (
           <div style={{
             display: 'flex',
@@ -102,7 +110,7 @@ const DishModal: React.FC<DishModalProps> = ({ dish, onClose, onEditDish, onDele
             </button>
 
             <button
-              onClick={() => setShowConfirmDelete(true)} // Mostra il prompt di conferma
+              onClick={() => setShowConfirmDelete(true)}
               className="bg-red-600 text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-red-700 transition-colors text-sm outline-none focus:outline-none"
             >
               Elimina

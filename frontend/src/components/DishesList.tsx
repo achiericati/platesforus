@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dish } from '../../../electron/database/interfaces';
+import { FaStar } from 'react-icons/fa';
 
 interface DishListItemsProps {
   categoryFilter: string;
@@ -42,6 +43,19 @@ const DishListItems: React.FC<DishListItemsProps> = ({
     return message.charAt(0).toUpperCase() + message.slice(1);
   };
 
+  const renderDishCard = (dish: Dish, index: number) => (
+    <div
+      key={index}
+      className="bg-white text-purple-600 p-2 rounded-lg shadow hover:scale-105 transition-all cursor-pointer flex flex-col items-center justify-center text-center"
+      onClick={() => onDishClick(dish)}
+    >
+      <div className="flex items-center gap-1">
+        <h5 className="font-semibold text-xs">{dish.name}</h5>
+        {Boolean(dish.isSpecial) && <FaStar className="text-yellow-500 text-xs" title="Piatto speciale" />}
+      </div>
+    </div>
+  );
+
   if (noDishesExist) {
     return (
       <div className="text-white text-center mt-10 text-lg font-semibold">
@@ -73,15 +87,7 @@ const DishListItems: React.FC<DishListItemsProps> = ({
                   {category} <span>{categoryIcons[category]}</span>
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-                  {dishesByCategory.map((dish, index) => (
-                    <div
-                      key={index}
-                      className="bg-white text-purple-600 p-2 rounded-lg shadow hover:scale-105 transition-all cursor-pointer flex items-center justify-center text-center"
-                      onClick={() => onDishClick(dish)}
-                    >
-                      <h5 className="font-semibold text-xs">{dish.name}</h5>
-                    </div>
-                  ))}
+                  {dishesByCategory.map(renderDishCard)}
                 </div>
               </div>
             );
@@ -92,15 +98,7 @@ const DishListItems: React.FC<DishListItemsProps> = ({
             {categoryFilter} <span>{categoryIcons[categoryFilter]}</span>
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-            {filteredDishes.map((dish, index) => (
-              <div
-                key={index}
-                className="bg-white text-purple-600 p-2 rounded-lg shadow hover:scale-105 transition-all cursor-pointer flex items-center justify-center text-center"
-                onClick={() => onDishClick(dish)}
-              >
-                <h5 className="font-semibold text-xs">{dish.name}</h5>
-              </div>
-            ))}
+            {filteredDishes.map(renderDishCard)}
           </div>
         </div>
       )}

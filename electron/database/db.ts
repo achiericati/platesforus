@@ -24,7 +24,8 @@ export const setupDatabase = async () => {
       category VARCHAR(45),
       difficulty VARCHAR(45),
       prepTime INTEGER,
-      recipe TEXT
+      recipe TEXT,
+      isSpecial BOOLEAN DEFAULT 0
     )
   `);
 
@@ -55,12 +56,13 @@ export const fetchAllDishesFromDb = async () => {
 export const addDish = async (newDish: Dish) => {
   try {
     const result = await db.run(
-      'INSERT INTO dish (name, category, difficulty, prepTime, recipe) VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO dish (name, category, difficulty, prepTime, recipe, isSpecial) VALUES (?, ?, ?, ?, ?, ?)',
       newDish.name,
       newDish.category,
       newDish.difficulty,
       newDish.prepTime,
-      newDish.recipe
+      newDish.recipe,
+      newDish.isSpecial ? 1 : 0
     );
     return {
       ...newDish,
@@ -77,13 +79,14 @@ export const updateDish = async (updatedDish: Dish) => {
   try {
     await db.run(
       `UPDATE dish 
-       SET name = ?, category = ?, difficulty = ?, prepTime = ?, recipe = ?
+       SET name = ?, category = ?, difficulty = ?, prepTime = ?, recipe = ?, isSpecial = ? 
        WHERE id = ?`,
       updatedDish.name,
       updatedDish.category,
       updatedDish.difficulty,
       updatedDish.prepTime,
       updatedDish.recipe,
+      updatedDish.isSpecial ? 1 : 0,
       updatedDish.id
     );
 

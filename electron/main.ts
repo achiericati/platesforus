@@ -7,7 +7,7 @@ import { dialog } from 'electron';
 import fs from 'fs';
 import { parse } from 'csv-parse/sync';
 
-const IS_DEV = true
+const IS_DEV = true;
 
 let win: BrowserWindow;
 
@@ -17,9 +17,9 @@ function createWindow() {
     height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: false,     
-      contextIsolation: true
-    }    
+      nodeIntegration: false,
+      contextIsolation: true,
+    },
   });
 
   if (IS_DEV) {
@@ -30,8 +30,7 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-
-  await setupDatabase(); 
+  await setupDatabase();
 
   createWindow();
 
@@ -109,18 +108,18 @@ app.whenReady().then(async () => {
     const { filePath } = await dialog.showSaveDialog({
       title: 'Salva i piatti come CSV',
       defaultPath: 'piatti.csv',
-      filters: [{ name: 'CSV', extensions: ['csv'] }]
+      filters: [{ name: 'CSV', extensions: ['csv'] }],
     });
-  
+
     if (!filePath) return;
-  
-    const header = 'Nome,Categoria,Difficoltà,Tempo Preparazione,Ricetta';
+
+    const header = 'Nome,Categoria,Difficoltà,Tempo Preparazione,Ricetta,Piatto Speciale';
     const rows = dishes.map(d =>
-      `"${d.name}","${d.category}","${d.difficulty}","${d.prepTime}","${(d.recipe || '').replace(/"/g, '""')}"`
+      `"${d.name}","${d.category}","${d.difficulty}","${d.prepTime}","${(d.recipe || '').replace(/"/g, '""')}","${d.isSpecial ? 'Si' : 'No'}"`
     );
-  
+
     const csvContent = [header, ...rows].join('\n');
-  
+
     fs.writeFileSync(filePath, csvContent, 'utf8');
   });
 
@@ -128,22 +127,22 @@ app.whenReady().then(async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog({
       title: 'Importa CSV di piatti',
       filters: [{ name: 'CSV', extensions: ['csv'] }],
-      properties: ['openFile']
+      properties: ['openFile'],
     });
-  
+
     if (canceled || filePaths.length === 0) return [];
 
     const db = getDb();
-  
+
     const content = fs.readFileSync(filePaths[0], 'utf8');
     const records = parse(content, {
       columns: true,
-      skip_empty_lines: true
+      skip_empty_lines: true,
     });
-  
+
     const existing = await db.all('SELECT name FROM dish');
     const existingNames = new Set(existing.map((r: any) => r.name.trim().toLowerCase()));
-  
+
     const newDishes = records
       .filter((r: any) => r['Nome'] && !existingNames.has(r['Nome'].trim().toLowerCase()))
       .map((r: any) => ({
@@ -151,17 +150,18 @@ app.whenReady().then(async () => {
         category: r['Categoria'],
         difficulty: r['Difficoltà'],
         prepTime: parseInt(r['Tempo Preparazione']) || 0,
-        recipe: r['Ricetta'] || ''
+        recipe: r['Ricetta'] || '',
+        isSpecial: r['Piatto Speciale']?.toLowerCase() === 'sì' ? 1 : 0
       }));
-  
-    const stmt = await db.prepare('INSERT INTO dish (name, category, difficulty, prepTime, recipe) VALUES (?, ?, ?, ?, ?)');
+
+    const stmt = await db.prepare('INSERT INTO dish (name, category, difficulty, prepTime, recipe, isSpecial) VALUES (?, ?, ?, ?, ?, ?)');
     for (const dish of newDishes) {
-      await stmt.run(dish.name, dish.category, dish.difficulty, dish.prepTime, dish.recipe);
+      await stmt.run(dish.name, dish.category, dish.difficulty, dish.prepTime, dish.recipe, dish.isSpecial ? 1 : 0);
     }
     await stmt.finalize();
 
     dataContext.invalidateDishesCache();
-  
+
     return newDishes;
   });
 
@@ -169,7 +169,7 @@ app.whenReady().then(async () => {
     const { filePath, canceled } = await dialog.showSaveDialog(options);
     return canceled ? undefined : filePath;
   });
-  
+
   ipcMain.handle('saveBufferToFile', async (_, filePath: string, buffer: Buffer) => {
     await fs.promises.writeFile(filePath, buffer);
   });
@@ -178,11 +178,11 @@ app.whenReady().then(async () => {
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'Esporta menu come immagine',
       defaultPath: 'menu-settimanale.png',
-      filters: [{ name: 'PNG Image', extensions: ['png'] }]
+      filters: [{ name: 'PNG Image', extensions: ['png'] }],
     });
-  
+
     if (canceled || !filePath) return false;
-  
+
     try {
       fs.writeFileSync(filePath, buffer);
       return true;
@@ -190,7 +190,7 @@ app.whenReady().then(async () => {
       console.error('Errore nel salvataggio immagine:', error);
       return false;
     }
-  });  
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

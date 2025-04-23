@@ -58,7 +58,10 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
 
   useEffect(() => {
     window.electronAPI.getAllDishes().then(dishes => {
-      setAllDishes(dishes.map(d => d.name));
+      const validNames = dishes
+        .filter(d => typeof d.name === 'string' && d.name.trim() !== '')
+        .map(d => d.name);
+      setAllDishes(validNames);
     });
   }, []);
 
@@ -134,7 +137,6 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
         </div>
       ) : (
         <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
-          {/* Istruzioni espandibili */}
           <div
             className="bg-white-100 border border-purple-300 rounded px-3 py-2 text-sm cursor-pointer"
             onClick={() => setShowInstructions(!showInstructions)}
@@ -151,11 +153,11 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
                 <p>Se aggiungi una nota al pasto, non verrà scelto nessun piatto, ma verrà mostrata la tua nota per quel pasto sul menu generato.</p>
                 <p>Hai inoltre la possibilità di aggiungere dei "Piatti obbligatori", che dovranno essere per forza inseriti nel menu; questo perchè magari hai già acquistato gli ingredienti.</p>
                 <p>Il checkbox "Evita duplicazioni" impedisce che lo stesso piatto venga ripetuto più volte.</p>
+                <p>I piatti che hai contrassegnato come speciali non verranno scelti per il menu.</p>
               </div>
             )}
           </div>
 
-          {/* Piatti obbligatori espandibili */}
           <div
             className="bg-white-100 border border-purple-300 rounded px-3 py-2 text-sm cursor-pointer"
             onClick={() => setShowForcedDishes(!showForcedDishes)}
@@ -172,6 +174,7 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Cerca un piatto"
+                  onClick={(e) => e.stopPropagation()}
                   className="w-full rounded-md border border-gray-300 px-3 py-1 text-sm"
                 />
                 <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto border p-2 rounded bg-white">
@@ -180,7 +183,8 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
                     .map(name => (
                       <button
                         key={name}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           const nuovi = forcedDishes.includes(name)
                             ? forcedDishes.filter(n => n !== name)
                             : [...forcedDishes, name];
@@ -200,7 +204,6 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
             )}
           </div>
 
-          {/* Checkbox evita duplicazioni */}
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -212,7 +215,6 @@ const GenerateMenuModal: React.FC<GenerateMenuModalProps> = ({
             <label htmlFor="avoidDupes" className="text-sm text-gray-800">Evita duplicazioni</label>
           </div>
 
-          {/* Selezione pasti giornalieri */}
           {Object.entries(selectedMeals).map(([date, pasti]) => (
             <div key={date} className="border-b pb-4">
               <h4 className="text-md font-bold text-gray-800 mb-2">
