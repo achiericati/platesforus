@@ -7,7 +7,7 @@ import EditMenuModal from './components/EditMenuModal';
 import ConfirmModal from './components/ConfirmModal';
 import { getRandomInt } from './components/utils';
 import { Dish, WeeklyMenuType, DayMenu, Portata } from '../../electron/database/interfaces';
-import { deleteMenuFromDb } from '../../electron/database/db';
+import logo from '../../assets/icon.png';
 
 type PastoConNota = {
   tipi: Portata[];
@@ -84,7 +84,6 @@ const App: React.FC = () => {
       const piattiUsati = new Set<string>();
       const nuovoMenu: WeeklyMenuType = {};
       const forcedQueue = [...forcedDishes];
-      const forcedLeftovers: string[] = [];
 
       for (const [data, pasti] of Object.entries(selectedMeals)) {
         const giorno = new Date(data);
@@ -186,7 +185,10 @@ const App: React.FC = () => {
     <div className="flex flex-col h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white font-sans">
       {!showManageDishes && (
         <header className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-lg">
-          <h1 className="text-3xl font-semibold text-white">Plates For Us 🍽️</h1>
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="Logo" className="h-10 w-10 rounded-xl shadow" />
+            <h1 className="text-3xl font-semibold text-white">Plates For Us</h1>
+          </div>
           <motion.button
             className="bg-white text-purple-600 font-semibold px-4 py-2 text-sm rounded-lg shadow hover:bg-gray-200 transition-colors outline-none focus:outline-none"
             whileHover={{ scale: 1.05 }}
