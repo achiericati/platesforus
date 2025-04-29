@@ -73,7 +73,7 @@ const DishListItems: React.FC<DishListItemsProps> = ({
   }
 
   return (
-    <>
+    <div className="h-full overflow-y-auto pr-2">
       {categoryFilter === 'All' ? (
         categories
           .filter(c => c !== 'All')
@@ -102,7 +102,7 @@ const DishListItems: React.FC<DishListItemsProps> = ({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
