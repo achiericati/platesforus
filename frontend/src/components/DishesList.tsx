@@ -80,7 +80,7 @@ const DishListItems: React.FC<DishListItemsProps> = ({
           .map((category) => {
             const dishesByCategory = filteredDishes.filter(dish => dish.category === category);
             if (dishesByCategory.length === 0) return null;
-
+  
             return (
               <div key={category} className="mb-6">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-3">
@@ -102,6 +102,8 @@ const DishListItems: React.FC<DishListItemsProps> = ({
           </div>
         </div>
       )}
+      {/* 👇 Spacer extra in fondo */}
+      <div className="h-4" />
     </div>
   );
 };
