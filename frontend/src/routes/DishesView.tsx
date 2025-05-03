@@ -118,8 +118,8 @@ const DishesView = ({ onBackClick }: any) => {
   const categoryIcons = { 'Primo': '🍝', 'Secondo': '🍖', 'Contorno': '🥗', 'Dolce': '🍰' };
 
   return (
-    <section className="flex flex-col flex-grow w-full overflow-hidden">
-    <div className="flex items-center justify-between w-full px-5 py-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 mb-4 relative">
+    <section className="flex flex-col h-full w-full overflow-hidden">
+      <div className="flex items-center justify-between w-full px-5 py-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 mb-4 relative">
         <button
           onClick={onBackClick}
           className="bg-white text-purple-600 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-200 transition-colors text-sm outline-none focus:outline-none"
@@ -196,10 +196,7 @@ const DishesView = ({ onBackClick }: any) => {
         difficulties={difficulties}
       />
 
-      <div
-        className="overflow-y-auto w-full px-6 py-4 scrollable-cards flex-grow"
-        style={{ maxHeight: showFilters ? 'calc(100vh - 255px)' : 'calc(100vh - 210px)' }}
-      >
+    <div className="flex-grow overflow-y-auto w-full px-6 py-4 scrollable-cards">
         <DishesList
           categoryFilter={categoryFilter}
           difficultyFilter={difficultyFilter}
